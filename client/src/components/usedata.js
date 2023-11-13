@@ -21,6 +21,18 @@ const useData = () => {
     }
   };
 
+  // fetch answers from the server
+  const fetchAnswers = async () => {
+    try {
+        const response = await axios.get(`${SERVER_URL}/answers`);
+        setData(prevData => ({ ...prevData, answers: response.data }));
+    } catch (err) {
+        console.error("Error fetching answers:", err);
+        setError(err);
+    }
+};
+
+
   // Fetch Tags from the server
   const fetchTags = async () => {
     try {
@@ -56,6 +68,7 @@ const useData = () => {
   useEffect(() => {
     fetchQuestions();
     fetchTags();
+    fetchAnswers();
   }, []);
 
   return {

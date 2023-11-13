@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// Import your model schemas
+// Importing schemas
 const Question = require('./models/questions');
 const Answer = require('./models/answers');
 const Tag = require('./models/tags');
@@ -66,6 +66,17 @@ app.get('/tags', async (req, res) => {
         res.status(500).send(error);
     }
 });
+
+// Get all answers
+app.get('/answers', async (req, res) => {
+    try {
+        const answers = await Answer.find({});
+        res.json(answers);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
+
 
 // Server listening
 const PORT = process.env.PORT || 8000;

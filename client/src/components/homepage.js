@@ -40,7 +40,8 @@ function QuestionList({
   };
 
   // Sorting functions
-  const sortByNewest = (a, b) => new Date(b.ask_date_time) - new Date(a.ask_date_time);
+  const sortByNewest = (a, b) =>
+    new Date(b.ask_date_time) - new Date(a.ask_date_time);
   const sortByActive = (a, b) => b.views - a.views;
 
   useEffect(() => {
@@ -54,13 +55,23 @@ function QuestionList({
           updatedQuestions.sort(sortByActive);
           break;
         case "unanswered":
-          updatedQuestions = updatedQuestions.filter((q) => Array.isArray(q.answers) && q.answers.length === 0);
+          updatedQuestions = updatedQuestions.filter(
+            (q) => Array.isArray(q.answers) && q.answers.length === 0
+          );
           break;
         default:
           break;
       }
-      console.log("Updated questions after sorting/filtering:", updatedQuestions);
-      setDisplayedQuestions(updatedQuestions);
+
+      console.log(
+        "Updated questions after sorting/filtering:",
+        updatedQuestions
+      );
+      if (
+        JSON.stringify(updatedQuestions) !== JSON.stringify(displayedQuestions)
+      ) {
+        setDisplayedQuestions(updatedQuestions);
+      }
     }
   }, [sortMode, questions]);
 
@@ -68,7 +79,10 @@ function QuestionList({
     <div className="question-list">
       <div className="question-list-header">
         <h2>All Questions</h2>
-        <button className="ask-new-question" onClick={() => setActivePage("askQuestion")}>
+        <button
+          className="ask-new-question"
+          onClick={() => setActivePage("askQuestion")}
+        >
           Ask a Question
         </button>
       </div>
@@ -81,14 +95,26 @@ function QuestionList({
         </div>
       </div>
       {displayedQuestions.map((question) => {
-        const timeInfo = timeSince(new Date(question.ask_date_time), "question");
+        const timeInfo = timeSince(
+          new Date(question.ask_date_time),
+          "question"
+        );
 
         return (
-          <div key={question._id} className="question" onClick={() => handleQuestionClick(question)}>
+          <div
+            key={question._id}
+            className="question"
+            onClick={() => handleQuestionClick(question)}
+          >
             <div className="question-header">
               <div className="question-stats postStats">
                 <span>{question.views} views</span>
-                <span>{Array.isArray(question.answers) ? question.answers.length : 0} answers</span>
+                <span>
+                  {Array.isArray(question.answers)
+                    ? question.answers.length
+                    : 0}{" "}
+                  answers
+                </span>
               </div>
               <div className="question-title">
                 <h3 className="postTitle">{question.title}</h3>
