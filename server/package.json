@@ -7,5 +7,14 @@
   "devDependencies": {
     "eslint": "^8.52.0",
     "nodemon": "^2.0.22"
-  }
+  },
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "Veniamin",
+  "license": "ISC",
+  "description": ""
 }
