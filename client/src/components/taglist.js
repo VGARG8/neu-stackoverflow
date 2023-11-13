@@ -38,8 +38,9 @@ function TagList({ tags, questions, setActivePage, setSelectedTag }) {
             <Tag tag={tag} onClick={handleClick} />
             <p>
               {
-                questions.filter((question) => question.tags.includes(tag._id))
-                  .length
+                questions.filter((question) =>
+                  question.tags.some((t) => t._id === tag._id)
+                ).length
               }{" "}
               questions
             </p>

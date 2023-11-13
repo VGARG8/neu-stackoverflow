@@ -56,7 +56,7 @@ function FakeStackOverflow() {
   };
 
   let displayedQuestions = selectedTag
-    ? questions.filter((q) => q.tagIds.includes(selectedTag.tid))
+    ? questions.filter((q) => q.tags.map(t => t._id).includes(selectedTag._id))
     : filteredQuestions;
 
   if (loading) {
