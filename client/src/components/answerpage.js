@@ -23,7 +23,7 @@ function AnswerPage({
   setSelectedTag,
 }) {
   // console.log("Question Data:", question);
-  // console.log("Answers Data:", answers);
+     console.log("Answers Data:", answers);
 
 
   /**

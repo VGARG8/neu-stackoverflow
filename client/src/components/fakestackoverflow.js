@@ -9,7 +9,8 @@ import useData from "./usedata.js";
 import AnswerPage from "./answerpage.js";
 
 function FakeStackOverflow() {
-  const { data, loading, error, addQuestion, addAnswer } = useData();
+  const { data, loading, error, addQuestion, addAnswer, fetchQuestionById, incrementQuestionViews } =
+    useData();
 
   //console.log("Data in FakeStackOverflow:", data);
 
@@ -33,9 +34,17 @@ function FakeStackOverflow() {
     }
   }, [activePage, questions]);
 
-  const handleAddAnswer = (qid, answer) => {
-    addAnswer(qid, answer);
+  const handleAddAnswer = async (qid, answer) => {
+    try {
+      // add answer
+      await addAnswer(qid, answer);
+
+      const updateQuestion = await fetchQuestionById(qid);
+    } catch (error) {
+      console.error("Error adding a new ans: ", error);
+    }
   };
+
 
   useEffect(() => {
     if (selectedQuestion) {
@@ -111,9 +120,7 @@ function FakeStackOverflow() {
           <AnswerPage
             question={selectedQuestion}
             tags={tags}
-            answers={answers.filter((answer) =>
-              selectedQuestion.answers.some((a) => a._id === answer._id)
-            )}
+            answers={selectedQuestion.answers}
             setActivePage={setActivePage}
             setSelectedTag={setSelectedTag}
           />
@@ -123,6 +130,7 @@ function FakeStackOverflow() {
             questions={displayedQuestions}
             tags={tags}
             setActivePage={setActivePage}
+            incrementQuestionViews={incrementQuestionViews}
             onQuestionClick={(question) => {
               setSelectedQuestion(question);
               setActivePage("detailedQuestion");

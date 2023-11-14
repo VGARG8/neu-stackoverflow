@@ -132,6 +132,51 @@ app.get("/answers", async (req, res) => {
   }
 });
 
+// Get a single question by ID
+app.get("/questions/:id", async (req, res) => {
+  try {
+    const questionId = req.params.id;
+    const question = await Question.findById(questionId)
+      .populate("answers")
+      .populate("tags");
+
+    if (!question) {
+      return res.status(404).send("Question not found");
+    }
+
+    res.json(question);
+  } catch (error) {
+    console.error("Error fetching question:", error);
+    res.status(500).send(error);
+  }
+});
+
+
+// Increment the view count of a question
+app.patch("/questions/:id/increment-views", async (req, res) => {
+  try {
+    const questionId = req.params.id;
+    const question = await Question.findById(questionId);
+
+    
+    if (!question) {
+      return res.status(404).send("Question not found");
+    }
+
+    question.views = question.views + 1; 
+    await question.save();
+
+    res.status(200).send(question);
+  } catch (error) {
+    console.error("Error updating question views:", error);
+    res.status(500).send(error);
+  }
+});
+
+
+
+
+
 // Server listening
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
