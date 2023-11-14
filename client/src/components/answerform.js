@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 /**
  * A form component for users to answer questions.
@@ -8,90 +8,94 @@ import React, { useState } from 'react';
  * @param {Function} setActivePage - Function to set the active page view.
  */
 function AnswerForm({ qid, onSubmit, setActivePage }) {
-    const [text, setText] = useState('');           // Answer text state
-    const [username, setUsername] = useState('');   // Username state
-    const [textError, setTextError] = useState(''); // Error message for the answer text
-    const [usernameError, setUsernameError] = useState(''); // Error message for the username
 
-    const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g; // Regular expression pattern for hyperlinks
+  //console.log("The id:", qid);
 
-    /**
-     * Validates hyperlinks in the provided text.
-     * 
-     * @param {string} text - The text to validate for hyperlinks.
-     * @returns {boolean} True if all hyperlinks are valid, false otherwise.
-     */
-    const validateHyperlinks = (text) => {
-        let match;
-        while ((match = hyperlinkPattern.exec(text)) !== null) {
-            const linkName = match[1];
-            const url = match[2];
-            if (!linkName || !url || !url.startsWith('https://')) {
-                return false;
-            }
-        }
-        return true;
-    };
 
-    /**
-     * Handles the submission of the form.
-     *
-     * @param {Event} e - The submit event object.
-     */
-    const handleSubmit = (e) => {
-        e.preventDefault();
+  const [text, setText] = useState(""); // Answer text state
+  const [username, setUsername] = useState(""); // Username state
+  const [textError, setTextError] = useState(""); // Error message for the answer text
+  const [usernameError, setUsernameError] = useState(""); // Error message for the username
 
-        if (!validateHyperlinks(text)) {
-            setTextError('Invalid hyperlink');
-            return;
-        }
+  const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g; // Regular expression pattern for hyperlinks
 
-        // Validations
-        let isValid = true;
-        if (!text) {
-            setTextError('Answer text cannot be empty');
-            isValid = false;
-        } else {
-            setTextError('');
-        }
-        if (!username) {
-            setUsernameError('Username cannot be empty');
-            isValid = false;
-        } else {
-            setUsernameError('');
-        }
+  /**
+   * Validates hyperlinks in the provided text.
+   *
+   * @param {string} text - The text to validate for hyperlinks.
+   * @returns {boolean} True if all hyperlinks are valid, false otherwise.
+   */
+  const validateHyperlinks = (text) => {
+    let match;
+    while ((match = hyperlinkPattern.exec(text)) !== null) {
+      const linkName = match[1];
+      const url = match[2];
+      if (!linkName || !url || !url.startsWith("https://")) {
+        return false;
+      }
+    }
+    return true;
+  };
 
-        if (isValid) {
-            onSubmit(qid, {
-                text,
-                ansBy: username,
-                ansDate: new Date(),
-            });
-            setActivePage('detailedQuestion');
-        }
-    };
+  /**
+   * Handles the submission of the form.
+   *
+   * @param {Event} e - The submit event object.
+   */
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <input
-                id="answerUsernameInput"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-            />
-            {usernameError && <p>{usernameError}</p>}
-            
-            <textarea
-                id="answerTextInput"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Your Answer"
-            />
-            {textError && <p>{textError}</p>}
-            
-            <button type="submit">Post Answer</button>
-        </form>
-    );
+    if (!validateHyperlinks(text)) {
+      setTextError("Invalid hyperlink");
+      return;
+    }
+
+    // Validations
+    let isValid = true;
+    if (!text) {
+      setTextError("Answer text cannot be empty");
+      isValid = false;
+    } else {
+      setTextError("");
+    }
+    if (!username) {
+      setUsernameError("Username cannot be empty");
+      isValid = false;
+    } else {
+      setUsernameError("");
+    }
+
+  if (isValid) {
+      onSubmit(qid, {  // Use qid here
+        text,
+        ans_by: username,
+      });
+      setActivePage("detailedQuestion");
+    }
+  };
+  
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        id="answerUsernameInput"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
+      />
+      {usernameError && <p>{usernameError}</p>}
+
+      <textarea
+        id="answerTextInput"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Your Answer"
+      />
+      {textError && <p>{textError}</p>}
+
+      <button type="submit">Post Answer</button>
+    </form>
+  );
 }
 
 export default AnswerForm;

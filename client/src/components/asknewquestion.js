@@ -74,11 +74,15 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
       title,
       text,
       tagNames: formattedTags,
-      askedBy: username,
+      asked_by: username,
+
     });
+
 
     setActivePage('questions');
   };
+
+
 
   return (
     <form onSubmit={handleSubmit}>

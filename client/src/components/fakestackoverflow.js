@@ -11,7 +11,7 @@ import AnswerPage from "./answerpage.js";
 function FakeStackOverflow() {
   const { data, loading, error, addQuestion, addAnswer } = useData();
 
-  console.log("Data in FakeStackOverflow:", data);
+  //console.log("Data in FakeStackOverflow:", data);
 
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [activePage, setActivePage] = useState("questions");
@@ -40,11 +40,12 @@ function FakeStackOverflow() {
   useEffect(() => {
     if (selectedQuestion) {
       const updatedQuestion = questions.find(
-        (q) => q.qid === selectedQuestion.qid
+        (q) => q._id === selectedQuestion._id
       );
+      console.log("Updated Question:", updatedQuestion);
       setSelectedQuestion(updatedQuestion);
     }
-  }, [questions]);
+  }, [questions, selectedQuestion]);
 
   const handleSetActivePage = (page) => {
     if (page === "questions") {
@@ -56,7 +57,9 @@ function FakeStackOverflow() {
   };
 
   let displayedQuestions = selectedTag
-    ? questions.filter((q) => q.tags.map(t => t._id).includes(selectedTag._id))
+    ? questions.filter((q) =>
+        q.tags.map((t) => t._id).includes(selectedTag._id)
+      )
     : filteredQuestions;
 
   if (loading) {
@@ -67,8 +70,8 @@ function FakeStackOverflow() {
     return <div>Error: {error.message}</div>;
   }
 
-  console.log("displayedQuestions:", displayedQuestions);
-  console.log("tags:", tags);
+  //console.log("displayedQuestions:", displayedQuestions);
+  //console.log("tags:", tags);
 
   return (
     <div className="fake-stack-overflow">
@@ -100,7 +103,7 @@ function FakeStackOverflow() {
           />
         ) : activePage === "answerQuestion" && selectedQuestion ? (
           <AnswerForm
-            qid={selectedQuestion.qid}
+            qid={selectedQuestion._id}
             onSubmit={handleAddAnswer}
             setActivePage={setActivePage}
           />

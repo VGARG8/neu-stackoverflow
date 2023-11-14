@@ -19,8 +19,8 @@ function QuestionList({
   setActivePage,
   onQuestionClick,
 }) {
-  console.log("Received questions in QuestionList:", questions);
-  console.log("Received tags in QuestionList:", tags);
+  // console.log("Received questions in QuestionList:", questions);
+  // console.log("Received tags in QuestionList:", tags);
 
   // State for sorting and displaying questions
   const [sortMode, setSortMode] = useState("newest");
@@ -63,10 +63,10 @@ function QuestionList({
           break;
       }
 
-      console.log(
-        "Updated questions after sorting/filtering:",
-        updatedQuestions
-      );
+      // console.log(
+      //   "Updated questions after sorting/filtering:",
+      //   updatedQuestions
+      //);
       if (
         JSON.stringify(updatedQuestions) !== JSON.stringify(displayedQuestions)
       ) {

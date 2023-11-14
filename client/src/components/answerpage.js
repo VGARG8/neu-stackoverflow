@@ -22,6 +22,10 @@ function AnswerPage({
   setActivePage,
   setSelectedTag,
 }) {
+  // console.log("Question Data:", question);
+  // console.log("Answers Data:", answers);
+
+
   /**
    * Handles the click event on a tag.
    * Sets the clicked tag as the selected tag and changes the active page/view to 'questionsByTag'.

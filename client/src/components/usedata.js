@@ -54,15 +54,22 @@ const useData = () => {
     }
   };
 
-  // Add a new answer
-  const addAnswer = async (answer, questionId) => {
-    try {
-      await axios.post(`${SERVER_URL}/answers`, { answer, questionId });
-      fetchQuestions(); // Refresh to show the new answer
-    } catch (err) {
-      console.error("Error adding a new answer:", err);
-    }
-  };
+// Add a new answer
+const addAnswer = async (qid, answerDetails) => {
+  try {
+    // qid for attaching to the right question
+    const payload = {
+      ...answerDetails,
+      questionId: qid,
+    };
+
+    await axios.post(`${SERVER_URL}/answers`, payload);
+    fetchQuestions(); // Refresh to show the new answer
+  } catch (err) {
+    console.error("Error adding a new answer:", err);
+  }
+};
+
 
   // Fetch data when the component using this hook mounts
   useEffect(() => {
