@@ -71,7 +71,7 @@ const addAnswer = async (qid, answerDetails) => {
 };
 
 
-  // Fetch data when the component using this hook mounts
+  // Fetch data 
   useEffect(() => {
     fetchQuestions();
     fetchTags();
@@ -84,7 +84,6 @@ const addAnswer = async (qid, answerDetails) => {
     error,
     addQuestion,
     addAnswer,
-    // Include other methods as needed
   };
 };
 
