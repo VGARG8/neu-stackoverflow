@@ -100,25 +100,37 @@ const useData = () => {
   };
 
   const incrementQuestionViews = async (questionId) => {
-  try {
-    // Make a request to increment the views
-    await axios.patch(`${SERVER_URL}/questions/${questionId}/increment-views`);
-
-    // Fetch the updated question data
-    const updatedQuestion = await fetchQuestionById(questionId);
-
-    // Update the questions array with the updated question
-    setData((prevData) => {
-      const updatedQuestions = prevData.questions.map((question) =>
-        question._id === questionId ? updatedQuestion : question
+    try {
+      // Make a request to increment the views
+      await axios.patch(
+        `${SERVER_URL}/questions/${questionId}/increment-views`
       );
-      return { ...prevData, questions: updatedQuestions };
-    });
-  } catch (err) {
-    console.error("Error incrementing question views:", err);
-  }
-};
 
+      // Fetch the updated question data
+      const updatedQuestion = await fetchQuestionById(questionId);
+
+      // Update the questions array with the updated question
+      setData((prevData) => {
+        const updatedQuestions = prevData.questions.map((question) =>
+          question._id === questionId ? updatedQuestion : question
+        );
+        return { ...prevData, questions: updatedQuestions };
+      });
+    } catch (err) {
+      console.error("Error incrementing question views:", err);
+    }
+  };
+
+  // fetch answers for a specific question by ID
+  const fetchAnswersByQuestionId = async (id) => {
+    try {
+      const response = await axios.get(`${SERVER_URL}/questions/${id}/answers`);
+      return response.data;
+    } catch (err) {
+      console.error("Error fetching answers by question ID:", err);
+      throw err;
+    }
+  };
 
   // Fetch data
   useEffect(() => {
@@ -134,7 +146,8 @@ const useData = () => {
     addQuestion,
     addAnswer,
     fetchQuestionById,
-    incrementQuestionViews
+    fetchAnswersByQuestionId,
+    incrementQuestionViews,
   };
 };
 
