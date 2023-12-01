@@ -1,8 +1,9 @@
-import React from 'react';
+import React from "react";
+import PropTypes from "prop-types";
 
 /**
  * Sidebar component for navigation between Tags and Questions pages.
- * 
+ *
  * @param {string} activePage - The current active page ('tags' or 'questions').
  * @param {Function} setActivePage - Function to set the active page.
  * @param {Function} resetSelectedQuestion - Function to reset the currently selected question.
@@ -12,18 +13,18 @@ function Sidebar({ activePage, setActivePage, resetSelectedQuestion }) {
   return (
     <div id="sideBarNav">
       <button
-        className={activePage === 'tags' ? 'active' : ''}
+        className={activePage === "tags" ? "active" : ""}
         onClick={() => {
-          setActivePage('tags');
+          setActivePage("tags");
           resetSelectedQuestion();
         }}
       >
         Tags
       </button>
       <button
-        className={activePage === 'questions' ? 'active' : ''}
+        className={activePage === "questions" ? "active" : ""}
         onClick={() => {
-          setActivePage('questions');
+          setActivePage("questions");
           resetSelectedQuestion();
         }}
       >
@@ -32,5 +33,11 @@ function Sidebar({ activePage, setActivePage, resetSelectedQuestion }) {
     </div>
   );
 }
+
+Sidebar.propTypes = {
+  activePage: PropTypes.string.isRequired,
+  setActivePage: PropTypes.func.isRequired,
+  resetSelectedQuestion: PropTypes.func.isRequired,
+};
 
 export default Sidebar;

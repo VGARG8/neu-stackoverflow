@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 /**
  * A form component for users to ask questions.
@@ -7,15 +8,15 @@ import React, { useState } from 'react';
  * @param {Function} setActivePage - Function to set the active page view.
  */
 function AskQuestionForm({ onSubmit, setActivePage }) {
-  const [title, setTitle] = useState('');
-  const [text, setText] = useState('');
-  const [tags, setTags] = useState('');
-  const [username, setUsername] = useState('');
-  const [error, setError] = useState('');
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
+  const [tags, setTags] = useState("");
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
 
   /**
    * Validates hyperlinks in the provided text.
-   * 
+   *
    * @param {string} text - The text to validate for hyperlinks.
    * @returns {boolean} True if all hyperlinks are valid, false otherwise.
    */
@@ -23,7 +24,7 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
     const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
     return !Array.from(text.matchAll(hyperlinkPattern)).some((match) => {
       const [, linkName, url] = match;
-      return !linkName || !url || !url.startsWith('https://');
+      return !linkName || !url || !url.startsWith("https://");
     });
   };
 
@@ -36,17 +37,17 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
     e.preventDefault();
 
     if (!title) {
-      setError('Title cannot be empty');
+      setError("Title cannot be empty");
       return;
     }
 
     if (title.length >= 100) {
-      setError('Title cannot be more than 100 characters');
+      setError("Title cannot be more than 100 characters");
       return;
     }
 
     if (!text) {
-      setError('Question text cannot be empty');
+      setError("Question text cannot be empty");
       return;
     }
 
@@ -61,12 +62,12 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
       .filter(Boolean);
 
     if (formattedTags.length > 5) {
-      setError('Cannot have more than 5 tags');
+      setError("Cannot have more than 5 tags");
       return;
     }
 
     if (formattedTags.some((tag) => tag.length > 20)) {
-      setError('New tag length cannot be more than 20');
+      setError("New tag length cannot be more than 20");
       return;
     }
 
@@ -75,14 +76,10 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
       text,
       tagNames: formattedTags,
       asked_by: username,
-
     });
 
-
-    setActivePage('questions');
+    setActivePage("questions");
   };
-
-
 
   return (
     <form onSubmit={handleSubmit}>
@@ -115,5 +112,13 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
     </form>
   );
 }
+
+AskQuestionForm.propTypes = {
+  question: PropTypes.object.isRequired,
+  answers: PropTypes.array.isRequired,
+  setActivePage: PropTypes.func.isRequired,
+  setSelectedTag: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired
+};
 
 export default AskQuestionForm;

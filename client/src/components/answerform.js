@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 /**
  * A form component for users to answer questions.
@@ -8,9 +9,13 @@ import React, { useState } from "react";
  * @param {Function} setActivePage - Function to set the active page view.
  */
 function AnswerForm({ qid, onSubmit, setActivePage }) {
+  AnswerForm.propTypes = {
+    qid: PropTypes.string.isRequired, // Update the type if it's not a string
+    onSubmit: PropTypes.func.isRequired,
+    setActivePage: PropTypes.func.isRequired,
+  };
 
   //console.log("The id:", qid);
-
 
   const [text, setText] = useState(""); // Answer text state
   const [username, setUsername] = useState(""); // Username state
@@ -65,15 +70,15 @@ function AnswerForm({ qid, onSubmit, setActivePage }) {
       setUsernameError("");
     }
 
-  if (isValid) {
-      onSubmit(qid, {  // Use qid here
+    if (isValid) {
+      onSubmit(qid, {
+        // Use qid here
         text,
         ans_by: username,
       });
       setActivePage("detailedQuestion");
     }
   };
-  
 
   return (
     <form onSubmit={handleSubmit}>

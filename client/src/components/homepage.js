@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Tag from "./tag";
 import { timeSince } from "../timeHelper";
-import axios from "axios";
+import PropTypes from "prop-types";
 
 /**
  * Component that displays a list of questions, with options to sort and filter.
@@ -16,11 +16,12 @@ import axios from "axios";
 function QuestionList({
   setSelectedTag,
   questions,
-  tags,
   setActivePage,
   onQuestionClick,
-  incrementQuestionViews
-}) {
+  incrementQuestionViews,
+}) 
+
+{
   // console.log("Received questions in QuestionList:", questions);
   // console.log("Received tags in QuestionList:", tags);
 
@@ -28,15 +29,13 @@ function QuestionList({
   const [sortMode, setSortMode] = useState("newest");
   const [displayedQuestions, setDisplayedQuestions] = useState([]);
 
-
-  const SERVER_URL = "http://localhost:8000";
+  // const SERVER_URL = "http://localhost:8000";
 
   // Handler for when a question is clicked. Increments its view count.
   const handleQuestionClick = (question) => {
     // Call the backend to increment the view count, but don't wait for it
 
     incrementQuestionViews(question._id);
-
 
     // Call the onQuestionClick function with the updated question
     onQuestionClick({ ...question, views: question.views + 1 });
@@ -147,5 +146,14 @@ function QuestionList({
     </div>
   );
 }
+
+QuestionList.propTypes = {
+  setSelectedTag: PropTypes.func.isRequired,
+  questions: PropTypes.array.isRequired,
+  tags: PropTypes.array.isRequired,
+  setActivePage: PropTypes.func.isRequired,
+  onQuestionClick: PropTypes.func.isRequired,
+  incrementQuestionViews: PropTypes.func.isRequired,
+};
 
 export default QuestionList;

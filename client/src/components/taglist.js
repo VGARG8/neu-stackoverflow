@@ -1,5 +1,6 @@
 import React from "react";
 import Tag from "./tag";
+import PropTypes from "prop-types";
 
 /**
  * TagList component to display a list of tags and the count of questions associated with each tag.
@@ -50,4 +51,12 @@ function TagList({ tags, questions, setActivePage, setSelectedTag }) {
     </div>
   );
 }
+
+TagList.propTypes = {
+  tags: PropTypes.array.isRequired,
+  questions: PropTypes.array.isRequired,
+  setActivePage: PropTypes.func.isRequired,
+  setSelectedTag: PropTypes.func.isRequired,
+};
+
 export default TagList;

@@ -1,6 +1,7 @@
 import React from "react";
 import Tag from "./tag";
 import { timeSince } from "../timeHelper";
+import PropTypes from "prop-types";
 
 const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
 
@@ -17,14 +18,19 @@ const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
  */
 function AnswerPage({
   question,
-  tags,
   answers,
   setActivePage,
   setSelectedTag,
 }) {
-  // console.log("Question Data:", question);
-     console.log("Answers Data:", answers);
+  AnswerPage.propTypes = {
+    question: PropTypes.object.isRequired,
+    answers: PropTypes.array.isRequired,
+    setActivePage: PropTypes.func.isRequired,
+    setSelectedTag: PropTypes.func.isRequired,
+  };
 
+  // console.log("Question Data:", question);
+  console.log("Answers Data:", answers);
 
   /**
    * Handles the click event on a tag.

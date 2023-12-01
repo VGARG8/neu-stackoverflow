@@ -7,9 +7,12 @@ import QuestionList from "./homepage.js";
 import TagList from "./taglist.js";
 import useData from "./usedata.js";
 import AnswerPage from "./answerpage.js";
+//import PropTypes from 'prop-types';
+
+
 
 function FakeStackOverflow() {
-  const { data, loading, error, addQuestion, addAnswer, fetchQuestionById, incrementQuestionViews } =
+  const { data, loading, error, addQuestion, addAnswer, incrementQuestionViews } =
     useData();
 
   //console.log("Data in FakeStackOverflow:", data);
@@ -39,7 +42,7 @@ function FakeStackOverflow() {
       // add answer
       await addAnswer(qid, answer);
 
-      const updateQuestion = await fetchQuestionById(qid);
+      //const updateQuestion = await fetchQuestionById(qid);
     } catch (error) {
       console.error("Error adding a new ans: ", error);
     }
@@ -141,5 +144,8 @@ function FakeStackOverflow() {
     </div>
   );
 }
+
+
+
 
 export default FakeStackOverflow;
