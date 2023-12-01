@@ -1,3 +1,6 @@
+# Script to start DB
+startDB
+
 # Logs
 logs
 *.log
