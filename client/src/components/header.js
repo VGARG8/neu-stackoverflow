@@ -10,7 +10,14 @@ import PropTypes from "prop-types";
  * @param {Array} answers - List of all available answers.
  * @returns {JSX.Element} The rendered header with a search bar.
  */
-function Header({ onSearch, questions, tags, answers }) {
+function Header({
+  onSearch,
+  questions,
+  tags,
+  answers,
+  onLoginClick,
+  onRegisterClick,
+}) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleInputChange = (e) => {
@@ -87,6 +94,8 @@ function Header({ onSearch, questions, tags, answers }) {
         onChange={handleInputChange}
         onKeyUp={handleSearch}
       />
+      <button onClick={onLoginClick}>Login</button>
+      <button onClick={onRegisterClick}>Register</button>
     </div>
   );
 }
@@ -96,6 +105,8 @@ Header.propTypes = {
   questions: PropTypes.array.isRequired,
   tags: PropTypes.array.isRequired,
   answers: PropTypes.array.isRequired,
+  onLoginClick: PropTypes.func.isRequired,
+  onRegisterClick: PropTypes.func.isRequired,
 };
 
 export default Header;

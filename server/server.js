@@ -7,12 +7,14 @@ const mongoose = require("mongoose");
 const answerRoutes = require("./routes/answerRoutes");
 const questionRoutes = require("./routes/questionRoutes");
 const tagsRoutes = require("./routes/tagsRoutes");
+const userRoutes = require("./routes/userRoutes")
 
 
 // harcode route 
 const ANSWER_ROUTE = '/answers'
 const QUESTION_ROUTE = '/questions'
 const TAGS_ROUTE = '/tags'
+const USER_ROUTE = '/users'
 
 const PORT = 8000;
 
@@ -35,6 +37,7 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 app.use(ANSWER_ROUTE, answerRoutes);
 app.use(QUESTION_ROUTE, questionRoutes);
 app.use(TAGS_ROUTE, tagsRoutes);
+app.use(USER_ROUTE, userRoutes)
 
 
 // Start

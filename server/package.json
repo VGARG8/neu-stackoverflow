@@ -9,8 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "*",
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.9",
+    "cors": "^2.8.5",
     "express": "*",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "*",
     "mysql": "*"
   },
