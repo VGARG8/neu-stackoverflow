@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Tag from "./tag";
 import { timeSince } from "../timeHelper";
 import PropTypes from "prop-types";
+import { useAuth } from "./authContext.js";
 
 /**
  * Component that displays a list of questions, with options to sort and filter.
@@ -19,15 +20,14 @@ function QuestionList({
   setActivePage,
   onQuestionClick,
   incrementQuestionViews,
-}) 
-
-{
+}) {
   // console.log("Received questions in QuestionList:", questions);
   // console.log("Received tags in QuestionList:", tags);
 
   // State for sorting and displaying questions
   const [sortMode, setSortMode] = useState("newest");
   const [displayedQuestions, setDisplayedQuestions] = useState([]);
+  const { currentUser } = useAuth();
 
   // const SERVER_URL = "http://localhost:8000";
 
@@ -72,10 +72,6 @@ function QuestionList({
           break;
       }
 
-      // console.log(
-      //   "Updated questions after sorting/filtering:",
-      //   updatedQuestions
-      //);
       if (
         JSON.stringify(updatedQuestions) !== JSON.stringify(displayedQuestions)
       ) {
@@ -88,12 +84,14 @@ function QuestionList({
     <div className="question-list">
       <div className="question-list-header">
         <h2>All Questions</h2>
-        <button
-          className="ask-new-question"
-          onClick={() => setActivePage("askQuestion")}
-        >
-          Ask a Question
-        </button>
+        {currentUser && (
+          <button
+            className="ask-new-question"
+            onClick={() => setActivePage("askQuestion")}
+          >
+            Ask a Question
+          </button>
+        )}
       </div>
       <div className="question-list-subheader">
         <span>{displayedQuestions.length} questions</span>
@@ -130,7 +128,7 @@ function QuestionList({
               </div>
               <div className="question-post-details lastActivity">
                 <span>
-                  {question.askedBy} {timeInfo.time}
+                  {question.asked_by?.username} {timeInfo.time}
                   {timeInfo.addAgo ? " ago" : ""}
                 </span>
               </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { useAuth } from "./authContext"; // Ensure correct path
 
 /**
  * A form component for users to answer questions.
@@ -9,27 +10,14 @@ import PropTypes from "prop-types";
  * @param {Function} setActivePage - Function to set the active page view.
  */
 function AnswerForm({ qid, onSubmit, setActivePage }) {
-  AnswerForm.propTypes = {
-    qid: PropTypes.string.isRequired, // Update the type if it's not a string
-    onSubmit: PropTypes.func.isRequired,
-    setActivePage: PropTypes.func.isRequired,
-  };
-
-  //console.log("The id:", qid);
-
   const [text, setText] = useState(""); // Answer text state
-  const [username, setUsername] = useState(""); // Username state
   const [textError, setTextError] = useState(""); // Error message for the answer text
-  const [usernameError, setUsernameError] = useState(""); // Error message for the username
 
   const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g; // Regular expression pattern for hyperlinks
 
-  /**
-   * Validates hyperlinks in the provided text.
-   *
-   * @param {string} text - The text to validate for hyperlinks.
-   * @returns {boolean} True if all hyperlinks are valid, false otherwise.
-   */
+  const { currentUser } = useAuth(); // Get the current user
+
+  // Validate hyperlinks in the provided text
   const validateHyperlinks = (text) => {
     let match;
     while ((match = hyperlinkPattern.exec(text)) !== null) {
@@ -42,11 +30,7 @@ function AnswerForm({ qid, onSubmit, setActivePage }) {
     return true;
   };
 
-  /**
-   * Handles the submission of the form.
-   *
-   * @param {Event} e - The submit event object.
-   */
+  // Handle the submission of the form
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -55,41 +39,24 @@ function AnswerForm({ qid, onSubmit, setActivePage }) {
       return;
     }
 
-    // Validations
-    let isValid = true;
+    // Validation for text
     if (!text) {
       setTextError("Answer text cannot be empty");
-      isValid = false;
+      return;
     } else {
       setTextError("");
     }
-    if (!username) {
-      setUsernameError("Username cannot be empty");
-      isValid = false;
-    } else {
-      setUsernameError("");
-    }
 
-    if (isValid) {
-      onSubmit(qid, {
-        // Use qid here
-        text,
-        ans_by: username,
-      });
-      setActivePage("detailedQuestion");
-    }
+    // Submit the form
+    onSubmit(qid, {
+      text,
+      ans_by: currentUser.id, // Use username from currentUser
+    });
+    setActivePage("detailedQuestion");
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        id="answerUsernameInput"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
-      />
-      {usernameError && <p>{usernameError}</p>}
-
       <textarea
         id="answerTextInput"
         value={text}
@@ -102,5 +69,11 @@ function AnswerForm({ qid, onSubmit, setActivePage }) {
     </form>
   );
 }
+
+AnswerForm.propTypes = {
+  qid: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  setActivePage: PropTypes.func.isRequired,
+};
 
 export default AnswerForm;

@@ -2,6 +2,7 @@ import React from "react";
 import Tag from "./tag";
 import { timeSince } from "../timeHelper";
 import PropTypes from "prop-types";
+import { useAuth } from "./authContext.js";
 
 const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
 
@@ -16,18 +17,8 @@ const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
  * @param {Function} props.setSelectedTag - Function to set the currently selected tag.
  * @returns {JSX.Element} The rendered question and its answers.
  */
-function AnswerPage({
-  question,
-  answers,
-  setActivePage,
-  setSelectedTag,
-}) {
-  AnswerPage.propTypes = {
-    question: PropTypes.object.isRequired,
-    answers: PropTypes.array.isRequired,
-    setActivePage: PropTypes.func.isRequired,
-    setSelectedTag: PropTypes.func.isRequired,
-  };
+function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
+  const { currentUser } = useAuth();
 
   // console.log("Question Data:", question);
   console.log("Answers Data:", answers);
@@ -77,9 +68,11 @@ function AnswerPage({
       <div id="answersHeader" className="row">
         <span>{answers.length} answers</span>
         <h2>{question.title}</h2>
-        <button onClick={() => setActivePage("askQuestion")}>
-          Ask a Question
-        </button>
+        {currentUser && (
+          <button onClick={() => setActivePage("askQuestion")}>
+            Ask a Question
+          </button>
+        )}
       </div>
 
       <div id="questionBody" className="row">
@@ -107,22 +100,29 @@ function AnswerPage({
           <div key={answer._id}>
             <p className="answerText">{renderWithLinks(answer.text)}</p>
             <small className="answerAuthor">
-              Answered by {answer.ans_by}{" "}
+              {answer.ans_by.username}{" "}
               {timeSince(new Date(answer.ans_date_time), "answer").time}
-              {timeSince(new Date(answer.ans_date_time), "answer").addAgo
-                ? " ago"
-                : ""}
+              {timeSince(new Date(answer.ans_date_time), "answer").addAgo ? " ago" : ""}
             </small>
             <hr style={{ borderStyle: "dotted" }} />
           </div>
         ))}
       </div>
 
-      <button onClick={() => setActivePage("answerQuestion")}>
-        Answer Question
-      </button>
+      {currentUser && (
+        <button onClick={() => setActivePage("answerQuestion")}>
+          Answer Question
+        </button>
+      )}
     </div>
   );
 }
+
+AnswerPage.propTypes = {
+  question: PropTypes.object.isRequired,
+  answers: PropTypes.array.isRequired,
+  setActivePage: PropTypes.func.isRequired,
+  setSelectedTag: PropTypes.func.isRequired,
+};
 
 export default AnswerPage;

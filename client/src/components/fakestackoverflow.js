@@ -9,7 +9,8 @@ import useData from "./usedata.js";
 import AnswerPage from "./answerpage.js";
 import LoginForm from "./LoginForm.js";
 import RegistrationForm from "./registrationForm.js";
-import useAuth from "./useAuth.js";
+import useAuthApi from "./useAuthApi.js";
+import { useAuth } from "./authContext.js";
 
 function FakeStackOverflow() {
   const {
@@ -26,7 +27,8 @@ function FakeStackOverflow() {
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [selectedTag, setSelectedTag] = useState(null);
   const [activeForm, setActiveForm] = useState(null);
-  const {registerUser, loginUser, authError } = useAuth();
+  const { registerUser, loginUser, authError } = useAuthApi();
+  const { login} = useAuth();
 
   const questions = data ? data.questions : [];
   const tags = data ? data.tags : [];
@@ -77,7 +79,7 @@ function FakeStackOverflow() {
     }
     setSelectedQuestion(null);
     setActivePage(page);
-    setActiveForm(null); // Add this line to reset the activeForm state
+    setActiveForm(null); 
   };
 
   let displayedQuestions = selectedTag
@@ -94,11 +96,19 @@ function FakeStackOverflow() {
   };
 
   const handleLoginPost = async (credentials) => {
-    await loginUser(credentials);
-    if (!authError) {
-      // Handle successful login
+    const responseData = await loginUser(credentials);
+    if (responseData) {
+      console.log(
+        "This is the data from useAuthApi: ",
+        JSON.stringify(responseData, null, 2)
+      );
+      login(responseData.user);
+      window.location.href = "/welcome";
+    } else {
+      // Handle unsuccessful login
     }
   };
+
   if (loading) {
     return <div>Loading...</div>;
   }

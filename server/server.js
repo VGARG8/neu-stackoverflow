@@ -21,7 +21,14 @@ const PORT = 8000;
 
 const app = express();
 
-app.use(cors());
+//app.use(cors());
+
+
+app.use(cors({
+  origin: 'http://localhost:3000', // Your client's URL
+  credentials: true
+}));
+
 
 app.use(express.json()); // for parsing application/json
 

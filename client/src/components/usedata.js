@@ -66,7 +66,7 @@ const useData = () => {
   // Add a new question
   const addQuestion = async (question) => {
     try {
-      await axios.post(`${SERVER_URL}/questions`, question);
+      await axios.post(`${SERVER_URL}/questions`, question, { withCredentials: true});
       fetchQuestions(); // Refresh the questions list
     } catch (err) {
       console.error("Error adding a new question:", err);

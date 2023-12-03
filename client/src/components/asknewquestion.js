@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { useAuth } from "./authContext";
 
 /**
  * A form component for users to ask questions.
@@ -11,8 +12,18 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [tags, setTags] = useState("");
-  const [username, setUsername] = useState("");
+  //const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const { currentUser } = useAuth();
+
+
+  console.log("This is the current userID: ",  currentUser.id)
+
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     setUsername(currentUser.username); 
+  //   }
+  // }, [currentUser]);
 
   /**
    * Validates hyperlinks in the provided text.
@@ -71,11 +82,13 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
       return;
     }
 
+
+
     onSubmit({
       title,
       text,
       tagNames: formattedTags,
-      asked_by: username,
+      asked_by: currentUser.id,
     });
 
     setActivePage("questions");
@@ -101,12 +114,7 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
         onChange={(e) => setTags(e.target.value)}
         placeholder="Tags (comma or space-separated)"
       />
-      <input
-        id="formUsernameInput"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
-      />
+
       <button type="submit">Post Question</button>
       {error && <p>{error}</p>}
     </form>
@@ -118,7 +126,7 @@ AskQuestionForm.propTypes = {
   answers: PropTypes.array.isRequired,
   setActivePage: PropTypes.func.isRequired,
   setSelectedTag: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default AskQuestionForm;

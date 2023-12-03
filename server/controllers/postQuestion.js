@@ -1,11 +1,18 @@
+const mongoose = require('mongoose');
 const Question = require("../models/questions");
-const Answer = require("../models/answers");
 const Tag = require("../models/tags");
 
 exports.postQuestion = async (req, res) => {
   try {
     // Extract the tag names and other question details from the request body
     let { tagNames, ...questionDetails } = req.body;
+
+    // Ensure asked_by is correctly cast to an ObjectId
+    if (mongoose.Types.ObjectId.isValid(questionDetails.asked_by)) {
+      questionDetails.asked_by = new mongoose.Types.ObjectId(questionDetails.asked_by);
+    } else {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
 
     // Convert tag names to lowercase for consistent handling
     tagNames = tagNames.map((tag) => tag.toLowerCase());
@@ -33,12 +40,15 @@ exports.postQuestion = async (req, res) => {
     // Extract tag IDs
     const tagIds = combinedTags.map((tag) => tag._id);
 
-    // Create a new question with tag ObjectIds
-    const newQuestion = new Question({
+    // Combine tag ObjectIds with the rest of the question details
+    const questionData = {
       ...questionDetails,
       tags: tagIds,
       ask_date_time: new Date(),
-    });
+    };
+
+    // Create a new question document
+    const newQuestion = new Question(questionData);
 
     // Save the new question
     await newQuestion.save();
