@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-
 function RegistrationForm({ onRegister }) {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onRegister({ username, email, password });
+    onRegister({
+      username: username.trim(),
+      email: email.trim(),
+      password: password.trim(),
+    });
   };
 
   return (
@@ -38,7 +41,7 @@ function RegistrationForm({ onRegister }) {
 }
 
 RegistrationForm.propTypes = {
-    onRegister : PropTypes.func.isRequired,
-}
+  onRegister: PropTypes.func.isRequired,
+};
 
 export default RegistrationForm;

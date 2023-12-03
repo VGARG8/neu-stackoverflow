@@ -1,5 +1,4 @@
 const User = require('../models/users');
-const bcrypt = require('bcryptjs');
 
 exports.registerUser = async (req, res) => {
   const { username, email, password } = req.body;
@@ -13,11 +12,8 @@ exports.registerUser = async (req, res) => {
     user = new User({
       username,
       email,
-      password
+      password 
     });
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
 
     await user.save();
     res.status(201).json({ msg: 'User registered successfully' });
@@ -26,3 +22,4 @@ exports.registerUser = async (req, res) => {
     res.status(500).send(error);
   }
 };
+

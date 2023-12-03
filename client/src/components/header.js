@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { useAuth } from "./authContext";
 
 /**
  * Header component containing the site title and search functionality.
@@ -19,6 +20,16 @@ function Header({
   onRegisterClick,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const auth = useAuth(); // Store the context in a variable
+
+  // Early return in case the context is not available
+  if (!auth) {
+    console.error("AuthContext is not available.");
+    return null;
+  }
+
+  // Now that we've checked that auth is valid, we can destructure it safely
+  const { currentUser, logout } = useAuth();
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
@@ -82,6 +93,7 @@ function Header({
     }
   };
 
+
   return (
     <div className="header">
       <h1>Fake Stack Overflow</h1>
@@ -94,8 +106,18 @@ function Header({
         onChange={handleInputChange}
         onKeyUp={handleSearch}
       />
-      <button onClick={onLoginClick}>Login</button>
-      <button onClick={onRegisterClick}>Register</button>
+
+      {currentUser ? (
+        <>
+          <span>Welcome, {currentUser.username}!</span>
+          <button onClick={logout}>Logout</button>
+        </>
+      ) : (
+        <>
+          <button onClick={onLoginClick}>Login</button>
+          <button onClick={onRegisterClick}>Register</button>
+        </>
+      )}
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import FakeStackOverflow from './components/fakestackoverflow.js';
+import App from './App'; 
 
 ReactDOM.render(
-  <FakeStackOverflow />,
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
   document.getElementById('root')
 );
