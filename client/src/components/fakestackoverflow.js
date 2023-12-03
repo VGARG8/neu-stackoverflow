@@ -28,7 +28,7 @@ function FakeStackOverflow() {
   const [selectedTag, setSelectedTag] = useState(null);
   const [activeForm, setActiveForm] = useState(null);
   const { registerUser, loginUser, authError } = useAuthApi();
-  const { login} = useAuth();
+  const { login } = useAuth();
 
   const questions = data ? data.questions : [];
   const tags = data ? data.tags : [];
@@ -74,19 +74,30 @@ function FakeStackOverflow() {
 
   const handleSetActivePage = (page) => {
     if (page === "questions") {
+      console.log("Resetting selected tag"); 
       setSelectedTag(null);
       setFilteredQuestions(questions);
     }
     setSelectedQuestion(null);
+    console.log("Setting active page to:", page); 
     setActivePage(page);
-    setActiveForm(null); 
+    setActiveForm(null);
   };
+
+  useEffect(() => {
+    if (selectedTag) {
+      console.log("selectedTag updated:", selectedTag); 
+      // Your existing logic to filter questions based on selectedTag
+    }
+  }, [selectedTag, questions]);
 
   let displayedQuestions = selectedTag
     ? questions.filter((q) =>
         q.tags.map((t) => t._id).includes(selectedTag._id)
       )
     : filteredQuestions;
+    console.log("Displayed questions after tag selection:", displayedQuestions);
+
 
   const handleRegisterPost = async (userData) => {
     await registerUser(userData);
@@ -172,7 +183,7 @@ function FakeStackOverflow() {
                 setSelectedTag={setSelectedTag}
               />
             )}
-            {activePage === "questions" && (
+            {(activePage === "questions"  ||  activePage === "questionsByTag") && (
               <QuestionList
                 setSelectedTag={setSelectedTag}
                 questions={displayedQuestions}

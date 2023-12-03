@@ -20,7 +20,7 @@ const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
 function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   const { currentUser } = useAuth();
 
-  // console.log("Question Data:", question);
+  console.log("Question Data:", question);
   console.log("Answers Data:", answers);
 
   /**
@@ -79,7 +79,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
         <span>{question.views} views</span>
         <p>{renderWithLinks(question.text)}</p>
         <small>
-          {question.askedBy}{" "}
+          {question.asked_by?.username || 'Unknown User'}{" "}
           {timeSince(new Date(question.ask_date_time), "question").time}
           {timeSince(new Date(question.ask_date_time), "question").addAgo
             ? " ago"
