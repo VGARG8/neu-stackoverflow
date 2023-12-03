@@ -22,6 +22,8 @@ function Tag({ tag, onClick }) {
    */
   const handleClick = (event) => {
     event.stopPropagation();
+    console.log("Tag clicked:", tag);
+
     if (typeof onClick === "function") {
       onClick(tag, event);
     }

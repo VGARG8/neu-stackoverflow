@@ -1,6 +1,7 @@
 import React from "react";
 import Tag from "./tag";
 import PropTypes from "prop-types";
+import { useAuth } from "./authContext";
 
 /**
  * TagList component to display a list of tags and the count of questions associated with each tag.
@@ -18,7 +19,14 @@ function TagList({ tags, questions, setActivePage, setSelectedTag }) {
    *
    * @param {Object} tag - The clicked tag object.
    */
+
+  const { currentUser } = useAuth();
+
+  console.log("Tags:", tags);
+  console.log("Questions:", questions);
+
   const handleClick = (tag) => {
+    console.log("Selected tag in TagList:", tag);
     setSelectedTag(tag);
     setActivePage("questionsByTag");
   };
@@ -27,9 +35,12 @@ function TagList({ tags, questions, setActivePage, setSelectedTag }) {
     <div className="tag-list">
       <div className="row">
         <h2>{tags.length} Tags</h2>
-        <button onClick={() => setActivePage("askQuestion")}>
-          Ask a Question
-        </button>
+        {/* Show the button only if there is a currentUser */}
+        {currentUser && (
+          <button onClick={() => setActivePage("askQuestion")}>
+            Ask a Question
+          </button>
+        )}
       </div>
       <h3>All Tags</h3>
 
