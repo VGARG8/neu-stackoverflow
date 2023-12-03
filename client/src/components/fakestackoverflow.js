@@ -87,7 +87,6 @@ function FakeStackOverflow() {
   useEffect(() => {
     if (selectedTag) {
       console.log("selectedTag updated:", selectedTag); 
-      // Your existing logic to filter questions based on selectedTag
     }
   }, [selectedTag, questions]);
 
