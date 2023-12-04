@@ -1,3 +1,9 @@
+# Script to start DB
+startDB
+
+# server configs
+*/config
+
 # Logs
 logs
 *.log
