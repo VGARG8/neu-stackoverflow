@@ -9,7 +9,7 @@ exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email }).select('+reputation'); // Fetch reputation along with user details
     console.log("Found User:", user);
 
     if (!user) {
@@ -46,11 +46,12 @@ exports.loginUser = async (req, res) => {
           maxAge: 3600 * 1000,
         });
 
-        // Include both user ID and username in the response
+        // Include user ID, username, and reputation in the response
         res.status(200).json({
           user: {
             id: user.id,
-            username: user.username, // Assuming 'username' is the desired field name
+            username: user.username,
+            reputation: user.reputation // Include reputation in the response
           },
           msg: "Login successful",
         });

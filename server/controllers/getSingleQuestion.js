@@ -8,20 +8,16 @@ exports.getSingleQuestion = async (req, res) => {
     const question = await Question.findById(questionId)
       .populate({
         path: "answers",
-        populate: { path: "ans_by", select: "username" }, // Populate user details in answers
+        populate: { path: "ans_by", select: "username" },
       })
       .populate("tags")
-      .populate("asked_by", "username"); // Simplified population
+      .populate("asked_by", "username reputation")
+      .populate("accepted_answer")
+      .select('title text tags asked_by views answers score accepted_answer createdAt updatedAt'); 
 
     if (!question) {
       return res.status(404).send("Question not found");
     }
-
-    // Debugging: Stringify the output to inspect the populated data
-    console.log(
-      "This is the question from the getSingleQuestion controller on the server: ",
-      JSON.stringify(question, null, 2)
-    );
 
     res.json(question);
   } catch (error) {

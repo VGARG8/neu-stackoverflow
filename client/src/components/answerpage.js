@@ -3,6 +3,7 @@ import Tag from "./tag";
 import { timeSince } from "../timeHelper";
 import PropTypes from "prop-types";
 import { useAuth } from "./authContext.js";
+import useData from "./usedata.js";
 
 const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
 
@@ -19,9 +20,20 @@ const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
  */
 function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   const { currentUser } = useAuth();
+  const { upvoteAnswer, downvoteAnswer } = useData();
 
-  console.log("Question Data:", question);
-  console.log("Answers Data:", answers);
+  const handleAnswerVote = async (event, answerId, voteType) => {
+    event.stopPropagation(); // Prevent the click event from bubbling up.
+    if (voteType === "upvote") {
+      await upvoteAnswer(answerId);
+    } else {
+      await downvoteAnswer(answerId);
+    }
+    // Optionally refresh the answers list or optimistically update the UI.
+  };
+
+  // console.log("Question Data:", question);
+  // console.log("Answers Data:", answers);
 
   /**
    * Handles the click event on a tag.
@@ -63,59 +75,81 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
     return parts;
   };
 
-  return (
-    <div className="answer-page">
-      <div id="answersHeader" className="row">
-        <span>{answers.length} answers</span>
-        <h2>{question.title}</h2>
-        {currentUser && (
-          <button onClick={() => setActivePage("askQuestion")}>
-            Ask a Question
-          </button>
-        )}
+return (
+  <div className="answer-page">
+    {/* Question voting section starts here */}
+    {currentUser && (
+      <div className="question-vote-buttons">
+        <button onClick={(event) => handleAnswerVote(event, question._id, "upvote")}>
+          Upvote
+        </button>
+        <button onClick={(event) => handleAnswerVote(event, question._id, "downvote")}>
+          Downvote
+        </button>
+        <span className="question-score">Score: {question.score}</span>
       </div>
+    )}
+    {/* Question voting section ends here */}
 
-      <div id="questionBody" className="row">
-        <span>{question.views} views</span>
-        <p>{renderWithLinks(question.text)}</p>
-        <small>
-          {question.asked_by?.username || 'Unknown User'}{" "}
-          {timeSince(new Date(question.ask_date_time), "question").time}
-          {timeSince(new Date(question.ask_date_time), "question").addAgo
-            ? " ago"
-            : ""}
-        </small>
-      </div>
-
-      <div className="tags-row">
-        <hr style={{ borderStyle: "dotted" }} />
-        {question.tags.map((tag) => (
-          <Tag key={tag._id} tag={tag} onClick={handleClickTag} />
-        ))}
-        <hr style={{ borderStyle: "dotted" }} />
-      </div>
-
-      <div className="answers">
-        {answers.map((answer) => (
-          <div key={answer._id}>
-            <p className="answerText">{renderWithLinks(answer.text)}</p>
-            <small className="answerAuthor">
-              {answer.ans_by.username}{" "}
-              {timeSince(new Date(answer.ans_date_time), "answer").time}
-              {timeSince(new Date(answer.ans_date_time), "answer").addAgo ? " ago" : ""}
-            </small>
-            <hr style={{ borderStyle: "dotted" }} />
-          </div>
-        ))}
-      </div>
-
+    <div id="answersHeader" className="row">
+      <span>{answers.length} answers</span>
+      <h2>{question.title}</h2>
       {currentUser && (
-        <button onClick={() => setActivePage("answerQuestion")}>
-          Answer Question
+        <button onClick={() => setActivePage("askQuestion")}>
+          Ask a Question
         </button>
       )}
     </div>
-  );
+
+    <div id="questionBody" className="row">
+      <span>{question.views} views</span>
+      <p>{renderWithLinks(question.text)}</p>
+      <small>
+        {question.asked_by?.username || "Unknown User"}{" "}
+        {timeSince(new Date(question.ask_date_time), "question").time}
+        {timeSince(new Date(question.ask_date_time), "question").addAgo ? " ago" : ""}
+      </small>
+    </div>
+
+    <div className="tags-row">
+      <hr style={{ borderStyle: "dotted" }} />
+      {question.tags.map((tag) => (
+        <Tag key={tag._id} tag={tag} onClick={handleClickTag} />
+      ))}
+      <hr style={{ borderStyle: "dotted" }} />
+    </div>
+
+    <div className="answers">
+      {answers.map((answer) => (
+        <div key={answer._id} className="answer">
+          {currentUser && (
+            <div className="answer-vote-buttons">
+              <button onClick={(event) => handleAnswerVote(event, answer._id, "upvote")}>
+                Upvote
+              </button>
+              <button onClick={(event) => handleAnswerVote(event, answer._id, "downvote")}>
+                Downvote
+              </button>
+            </div>
+          )}
+          <p className="answerText">{renderWithLinks(answer.text)}</p>
+          <small className="answerAuthor">
+            {answer.ans_by.username}{" "}
+            {timeSince(new Date(answer.ans_date_time), "answer").time}
+            {timeSince(new Date(answer.ans_date_time), "answer").addAgo ? " ago" : ""}
+          </small>
+          <hr style={{ borderStyle: "dotted" }} />
+        </div>
+      ))}
+    </div>
+
+    {currentUser && (
+      <button onClick={() => setActivePage("answerQuestion")}>
+        Answer Question
+      </button>
+    )}
+  </div>
+);
 }
 
 AnswerPage.propTypes = {

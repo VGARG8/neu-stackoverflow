@@ -1,21 +1,26 @@
 const Question = require("../models/questions");
 const Answer = require("../models/answers");
-const Tag = require("../models/tags");
+const mongoose = require('mongoose')
 
 exports.postAnswer = async (req, res) => {
   try {
-
     const { text, ans_by, questionId } = req.body; // Extract required fields
     console.log("The text is: ", text);
     console.log("Answered by: ", ans_by);
-    console.log("ID: ", questionId);
+    console.log("Question ID: ", questionId);
 
-    // Create new answer with current date
+    // Ensure ans_by is correctly cast to an ObjectId
+    if (!mongoose.Types.ObjectId.isValid(ans_by)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
+    // Create new answer
     const newAnswer = new Answer({
       text,
-      ans_by,
-      ans_date_time: new Date(),
+      ans_by // ans_by should be a valid ObjectId
     });
+
+    console.log("This is the new answer: ", newAnswer);
 
     await newAnswer.save();
 

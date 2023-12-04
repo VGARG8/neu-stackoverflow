@@ -93,6 +93,7 @@ function Header({
     }
   };
 
+  console.log(currentUser);
 
   return (
     <div className="header">
@@ -109,7 +110,10 @@ function Header({
 
       {currentUser ? (
         <>
-          <span>Welcome, {currentUser.username}!</span>
+          <span>
+            Welcome, {currentUser.user.username}! (Reputation:{" "}
+            {currentUser.user.reputation})
+          </span>
           <button onClick={logout}>Logout</button>
         </>
       ) : (
