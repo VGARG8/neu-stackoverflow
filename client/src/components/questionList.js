@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Tag from "./tag";
-import { timeSince } from "../timeHelper";
+import Tag from "./tag.js";
+import { timeSince } from "../timeHelper.js";
 import PropTypes from "prop-types";
 import { useAuth } from "./authContext.js";
+import useData from "./usedata.js";
 
 /**
  * Component that displays a list of questions, with options to sort and filter.
@@ -21,15 +22,22 @@ function QuestionList({
   onQuestionClick,
   incrementQuestionViews,
 }) {
-  // console.log("Received questions in QuestionList:", questions);
-  // console.log("Received tags in QuestionList:", tags);
-
   // State for sorting and displaying questions
   const [sortMode, setSortMode] = useState("newest");
   const [displayedQuestions, setDisplayedQuestions] = useState([]);
   const { currentUser } = useAuth();
+  const { upvoteQuestion, downvoteQuestion } = useData();
 
-  // const SERVER_URL = "http://localhost:8000";
+
+  const handleVote = async (event, questionId, voteType) => {
+    event.stopPropagation();
+    if (voteType === "upvote") {
+      await upvoteQuestion(questionId);
+    } else {
+      await downvoteQuestion(questionId);
+    }
+    // Optionally refresh the question list or optimistically update the UI
+  };
 
   // Handler for when a question is clicked. Increments its view count.
   const handleQuestionClick = (question) => {
@@ -102,10 +110,7 @@ function QuestionList({
         </div>
       </div>
       {displayedQuestions.map((question) => {
-        const timeInfo = timeSince(
-          new Date(question.ask_date_time),
-          "question"
-        );
+        const timeInfo = timeSince(new Date(question.createdAt), "question");
 
         return (
           <div
@@ -137,6 +142,19 @@ function QuestionList({
               {question.tags.map((tag) => (
                 <Tag key={tag._id} tag={tag} onClick={handleTagClick} />
               ))}
+            </div>
+            <div className="question-voting">
+              {currentUser && (
+                <div className="question-vote-buttons">
+                  <button onClick={(event) => handleVote(event, question._id, "upvote")}>
+                    Upvote
+                  </button>
+                  <button onClick={(event) => handleVote(event, question._id, "downvote")}>
+                    Downvote
+                  </button>
+                </div>
+              )}
+              <span className="question-score">Score: {question.score}</span>
             </div>
           </div>
         );
