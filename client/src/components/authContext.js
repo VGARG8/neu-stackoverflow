@@ -10,8 +10,15 @@ const AuthContext = createContext({
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {
     // Initialize from Local Storage
-    const storedUser = localStorage.getItem("currentUser"); // Replace with sessionStorage if you prefer
-    return storedUser ? JSON.parse(storedUser) : null;
+    const storedUser = localStorage.getItem("currentUser");
+    if (storedUser) {
+      try {
+        return JSON.parse(storedUser);
+      } catch (e) {
+        console.error("Error parsing user data from localStorage:", e);
+      }
+    }
+    return null;
   });
 
   // Log current user state
@@ -19,8 +26,9 @@ export const AuthProvider = ({ children }) => {
 
   const login = (user) => {
     console.log("Logging in user:", user);
+    // Assume 'user' object includes 'reputation' field
     setCurrentUser(user);
-    localStorage.setItem("currentUser", JSON.stringify(user)); // Replace with sessionStorage if you prefer
+    localStorage.setItem("currentUser", JSON.stringify(user));
   };
 
   const logout = () => {

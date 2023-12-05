@@ -3,11 +3,11 @@ import AskQuestionForm from "./asknewquestion.js";
 import AnswerForm from "./answerform.js";
 import Header from "./header.js";
 import Sidebar from "./sidebar.js";
-import QuestionList from "./homepage.js";
+import QuestionList from "./questionList.js";
 import TagList from "./taglist.js";
 import useData from "./usedata.js";
 import AnswerPage from "./answerpage.js";
-import LoginForm from "./LoginForm.js";
+import LoginForm from "./loginForm.js";
 import RegistrationForm from "./registrationForm.js";
 import useAuthApi from "./useAuthApi.js";
 import { useAuth } from "./authContext.js";
@@ -95,13 +95,14 @@ function FakeStackOverflow() {
         q.tags.map((t) => t._id).includes(selectedTag._id)
       )
     : filteredQuestions;
-    console.log("Displayed questions after tag selection:", displayedQuestions);
+    //console.log("Displayed questions after tag selection:", displayedQuestions);
 
 
   const handleRegisterPost = async (userData) => {
     await registerUser(userData);
     if (!authError) {
-      // Handle successful registration
+      // once the user registers redirect them to login
+      window.location.href = "/login";
     }
   };
 
@@ -112,7 +113,7 @@ function FakeStackOverflow() {
         "This is the data from useAuthApi: ",
         JSON.stringify(responseData, null, 2)
       );
-      login(responseData.user);
+      login(responseData);
       window.location.href = "/welcome";
     } else {
       // Handle unsuccessful login

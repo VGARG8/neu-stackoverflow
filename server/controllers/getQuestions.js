@@ -7,16 +7,16 @@ exports.getQuestions = async (req, res) => {
     const questions = await Question.find({})
       .populate({
         path: 'answers',
-        populate: { path: 'ans_by', select: 'username' } // Populate user details in answers
+        populate: { path: 'ans_by', select: 'username' }
       })
       .populate('tags')
       .populate({ 
         path: 'asked_by', 
-        select: 'username' // Only fetch the username field from User collection
-      });
+        select: 'username reputation' 
+      })
+      .select('title text tags asked_by views score createdAt updatedAt'); 
 
     res.json(questions);
-    console.log("This is the questions from the getQuestions controller on the server: ", questions);
   } catch (error) {
     res.status(500).send(error);
   }

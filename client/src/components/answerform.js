@@ -50,8 +50,9 @@ function AnswerForm({ qid, onSubmit, setActivePage }) {
     // Submit the form
     onSubmit(qid, {
       text,
-      ans_by: currentUser.id, // Use username from currentUser
+      ans_by: currentUser.user.id, // Use username from currentUser
     });
+    console.log("This is the answer detais  from answerForm.js: ", qid, text, currentUser);
     setActivePage("detailedQuestion");
   };
 

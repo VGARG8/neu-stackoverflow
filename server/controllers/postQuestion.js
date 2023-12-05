@@ -43,8 +43,7 @@ exports.postQuestion = async (req, res) => {
     // Combine tag ObjectIds with the rest of the question details
     const questionData = {
       ...questionDetails,
-      tags: tagIds,
-      ask_date_time: new Date(),
+      tags: tagIds
     };
 
     // Create a new question document

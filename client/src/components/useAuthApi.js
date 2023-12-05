@@ -24,7 +24,6 @@ const useAuthApi = () => {
       setAuthError(error.message);
     }
   };
-
   const loginUser = async (credentials) => {
     try {
       const response = await axios.post(
@@ -32,20 +31,15 @@ const useAuthApi = () => {
         credentials
       );
       if (response.status === 200) {
-        // Store user info or token as needed
-        console.log(
-          "This is the data from useAuthApi: ",
-          JSON.stringify(response.data, null, 2)
-        );
-        return response.data; // Return the response data to the caller
+        return response.data; // Return the response data directly if it's the user object
       } else {
         setAuthError("Login failed");
-        return null; // Return null to indicate unsuccessful login
+        return null;
       }
     } catch (error) {
       console.error("Error in logging in:", error);
       setAuthError(error.message);
-      return null; 
+      return null;
     }
   };
 
