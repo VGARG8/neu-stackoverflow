@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useAuth } from "./authContext";
 
@@ -17,13 +17,9 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
   const { currentUser } = useAuth();
 
 
-  console.log("This is the current userID: ",  currentUser.id)
-
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     setUsername(currentUser.username); 
-  //   }
-  // }, [currentUser]);
+  useEffect(() => {
+    console.log("This is the current userID: ", currentUser?.user?.id);
+  }, [currentUser]); // Logs only when currentUser changes
 
   /**
    * Validates hyperlinks in the provided text.
@@ -88,7 +84,7 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
       title,
       text,
       tagNames: formattedTags,
-      asked_by: currentUser.id,
+      asked_by: currentUser.user.id,
     });
 
     setActivePage("questions");

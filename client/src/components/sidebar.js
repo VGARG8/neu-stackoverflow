@@ -10,6 +10,9 @@ import PropTypes from "prop-types";
  * @returns {JSX.Element} The rendered sidebar navigation.
  */
 function Sidebar({ activePage, setActivePage, resetSelectedQuestion }) {
+  // get current user status
+
+
   return (
     <div id="sideBarNav">
       <button
