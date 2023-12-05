@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useAuth } from "./authContext";
 
@@ -18,6 +18,7 @@ function Header({
   answers,
   onLoginClick,
   onRegisterClick,
+  onProfileClick
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const auth = useAuth(); // Store the context in a variable
@@ -30,6 +31,13 @@ function Header({
 
   // Now that we've checked that auth is valid, we can destructure it safely
   const { currentUser, logout } = useAuth();
+
+  useEffect(() => {
+    if (currentUser) {
+      // Log only when currentUser is not null
+      console.log(currentUser);
+    }
+  }, [currentUser]);
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
@@ -93,8 +101,6 @@ function Header({
     }
   };
 
-  console.log(currentUser);
-
   return (
     <div className="header">
       <h1>Fake Stack Overflow</h1>
@@ -114,6 +120,8 @@ function Header({
             Welcome, {currentUser.user.username}! (Reputation:{" "}
             {currentUser.user.reputation})
           </span>
+          <button onClick={onProfileClick}>Profile</button>
+
           <button onClick={logout}>Logout</button>
         </>
       ) : (
@@ -133,6 +141,7 @@ Header.propTypes = {
   answers: PropTypes.array.isRequired,
   onLoginClick: PropTypes.func.isRequired,
   onRegisterClick: PropTypes.func.isRequired,
+  onProfileClick: PropTypes.func.isRequired
 };
 
 export default Header;
