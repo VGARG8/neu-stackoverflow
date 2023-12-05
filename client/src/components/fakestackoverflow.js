@@ -10,6 +10,7 @@ import AnswerPage from "./answerpage.js";
 import LoginForm from "./loginForm.js";
 import RegistrationForm from "./registrationForm.js";
 import useAuthApi from "./useAuthApi.js";
+import UserProfile from "./userProfile.js";
 import { useAuth } from "./authContext.js";
 
 function FakeStackOverflow() {
@@ -44,6 +45,10 @@ function FakeStackOverflow() {
     setActivePage(null);
   };
 
+  const handleProfileClick = () => {
+    setActivePage("profile");
+  };
+
   const handleSearch = useCallback((searchResults) => {
     setFilteredQuestions(searchResults);
     setActivePage("search");
@@ -74,19 +79,19 @@ function FakeStackOverflow() {
 
   const handleSetActivePage = (page) => {
     if (page === "questions") {
-      console.log("Resetting selected tag"); 
+      console.log("Resetting selected tag");
       setSelectedTag(null);
       setFilteredQuestions(questions);
     }
     setSelectedQuestion(null);
-    console.log("Setting active page to:", page); 
+    console.log("Setting active page to:", page);
     setActivePage(page);
     setActiveForm(null);
   };
 
   useEffect(() => {
     if (selectedTag) {
-      console.log("selectedTag updated:", selectedTag); 
+      console.log("selectedTag updated:", selectedTag);
     }
   }, [selectedTag, questions]);
 
@@ -95,8 +100,6 @@ function FakeStackOverflow() {
         q.tags.map((t) => t._id).includes(selectedTag._id)
       )
     : filteredQuestions;
-    //console.log("Displayed questions after tag selection:", displayedQuestions);
-
 
   const handleRegisterPost = async (userData) => {
     await registerUser(userData);
@@ -137,6 +140,7 @@ function FakeStackOverflow() {
         answers={answers}
         onLoginClick={handleLoginClick}
         onRegisterClick={handleRegisterClick}
+        onProfileClick={handleProfileClick}
       />
 
       <div className="main-content">
@@ -183,7 +187,9 @@ function FakeStackOverflow() {
                 setSelectedTag={setSelectedTag}
               />
             )}
-            {(activePage === "questions"  ||  activePage === "questionsByTag") && (
+            {activePage === "profile" && <UserProfile />}
+            {(activePage === "questions" ||
+              activePage === "questionsByTag") && (
               <QuestionList
                 setSelectedTag={setSelectedTag}
                 questions={displayedQuestions}
