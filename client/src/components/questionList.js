@@ -227,7 +227,7 @@ function QuestionList({
 QuestionList.propTypes = {
   setSelectedTag: PropTypes.func.isRequired,
   questions: PropTypes.array.isRequired,
-  tags: PropTypes.array.isRequired,
+  tags: PropTypes.array,
   setActivePage: PropTypes.func.isRequired,
   onQuestionClick: PropTypes.func.isRequired,
   incrementQuestionViews: PropTypes.func.isRequired,
