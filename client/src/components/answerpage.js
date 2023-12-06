@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Tag from "./tag";
 import { timeSince } from "../timeHelper";
 import PropTypes from "prop-types";
@@ -21,6 +21,39 @@ const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
 function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   const { currentUser } = useAuth();
   const { upvoteAnswer, downvoteAnswer } = useData();
+  const answersPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Identify if there is an accepted answer and separate it from other answers
+  const acceptedAnswer = answers.find(
+    (answer) => answer._id === question.accepted_answer
+  );
+  const otherAnswers = answers.filter(
+    (answer) => answer._id !== question.accepted_answer
+  );
+
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(
+    (acceptedAnswer ? otherAnswers.length : answers.length) / answersPerPage
+  );
+
+  // Change page handler
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  // Calculate paginated answers
+  const startIndex = acceptedAnswer
+    ? (currentPage - 1) * answersPerPage
+    : currentPage * answersPerPage - answersPerPage;
+  const paginatedAnswers = acceptedAnswer
+    ? [
+        acceptedAnswer,
+        ...otherAnswers.slice(startIndex, startIndex + answersPerPage - 1),
+      ]
+    : answers.slice(startIndex, startIndex + answersPerPage);
 
   const handleAnswerVote = async (event, answerId, voteType) => {
     event.stopPropagation(); // Prevent the click event from bubbling up.
@@ -71,7 +104,6 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
 
     return parts;
   };
-
   return (
     <div className="answer-page">
       {/* Question section with score visible to all users */}
@@ -129,7 +161,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
       </div>
 
       <div className="answers">
-        {answers.map((answer) => (
+        {paginatedAnswers.map((answer) => (
           <div key={answer._id} className="answer">
             {/* Answer score visible to all users */}
             <span className="answer-score">Score: {answer.score}</span>
@@ -163,6 +195,25 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
             <hr style={{ borderStyle: "dotted" }} />
           </div>
         ))}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="pagination-controls">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
 
       {currentUser && (
