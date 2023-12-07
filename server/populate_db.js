@@ -12,6 +12,7 @@ const User = require('./models/users');
 const Tag = require('./models/tags');
 const Question = require('./models/questions');
 const Answer = require('./models/answers');
+const Comment = require('./models/comments')
 
 mongoose.connect('mongodb://127.0.0.1:27017/fake_so', { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -102,6 +103,32 @@ async function createAnswers(users, questions, num) {
   return Answer.insertMany(answers);
 }
 
+  async function createComments(users, parentItems, parentType, num) {
+  const comments = [];
+  for (let i = 0; i < num; i++) {
+    const parentItem = faker.random.arrayElement(parentItems);
+    const createdAt = randomDate(new Date(2020, 0, 1), new Date());
+
+    const comment = new Comment({
+      text: faker.lorem.sentence(),
+      commented_by: faker.random.arrayElement(users)._id,
+      parent: {
+        id: parentItem._id,
+        type: parentType
+      },
+      createdAt, // Set the random creation date
+      updatedAt: createdAt, // Set updatedAt to the same as createdAt
+    });
+
+    parentItem.comments.push(comment._id);
+    await parentItem.save();
+
+    comments.push(comment);
+  }
+
+  return Comment.insertMany(comments);
+
+}
 
 
 async function main() {
@@ -112,6 +139,10 @@ async function main() {
     const tags = await createTags(5);
     const questions = await createQuestions(users, tags, 20);
     const answers = await createAnswers(users, questions, 50);
+
+    // Add comments to questions and answers
+    await createComments(users, questions, 'Question', 100); // Adjust numbers as needed
+    await createComments(users, answers, 'Answer', 100);
 
     console.log('Database populated!');
   } catch (err) {

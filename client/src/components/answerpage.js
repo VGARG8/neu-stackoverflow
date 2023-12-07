@@ -19,10 +19,14 @@ const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
  * @returns {JSX.Element} The rendered question and its answers.
  */
 function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
+  console.log('Question:', question);
+  console.log('Answers:', answers);
+
   const { currentUser } = useAuth();
-  const { upvoteAnswer, downvoteAnswer, acceptAnswer } = useData();
+  const { upvoteAnswer, downvoteAnswer, acceptAnswer, addComment } = useData();
   const answersPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
+  const [commentText, setCommentText] = useState({});
 
   // Identify if there is an accepted answer and separate it from other answers
   const acceptedAnswer = answers.find(
@@ -70,6 +74,13 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
       await downvoteAnswer(answerId);
     }
     //  refresh the answers list or optimistically
+  };
+
+  const handleAddComment = async (e, postId) => {
+    e.preventDefault();
+    if (commentText[postId]?.trim() === "") return;
+    await addComment(postId, commentText[postId]);
+    setCommentText(prevCommentText => ({ ...prevCommentText, [postId]: "" }));
   };
 
   /**
@@ -160,62 +171,129 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
         </small>
       </div>
 
+      <div className="question-comments">
+        {question.comments.map((comment) => {
+          console.log('Comment:', comment);
+          return (
+            <div key={comment._id} className="comment">
+              <p>{comment.text}</p>
+              <small>
+                Commented by {comment.commented_by.username}{" "}
+                {timeSince(new Date(comment.createdAt), "comment").time}
+                {timeSince(new Date(comment.createdAt), "comment").addAgo
+                  ? " ago"
+                  : ""}
+              </small>
+              <div>Votes: {comment.votes}</div>
+            </div>
+          );
+        })}
+        {currentUser && (
+          <form onSubmit={(e) => handleAddComment(e, question._id)}>
+            <input
+              type="text"
+              value={commentText[question._id] || ""}
+              onChange={(e) => setCommentText(prevCommentText => ({ ...prevCommentText, [question._id]: e.target.value }))}
+              placeholder="Add a comment"
+            />
+            <button type="submit">Submit</button>
+          </form>
+        )}
+      </div>
+
       <div className="tags-row">
         <hr style={{ borderStyle: "dotted" }} />
-        {question.tags.map((tag) => (
-          <Tag key={tag._id} tag={tag} onClick={handleClickTag} />
-        ))}
+        {question.tags.map((tag) => {
+          console.log('Tag:', tag);
+          return (
+            <Tag key={tag._id} tag={tag} onClick={handleClickTag} />
+          );
+        })}
         <hr style={{ borderStyle: "dotted" }} />
       </div>
 
       <div className="answers">
-        {paginatedAnswers.map((answer) => (
-          <div key={answer._id} className="answer">
-            {/* Answer score visible to all users */}
-            <span className="answer-score">Score: {answer.score}</span>
-            {/* Answer voting buttons shown only to logged-in users */}
-            {currentUser && (
-              <div className="answer-vote-buttons">
-                <button
-                  onClick={(event) =>
-                    handleAnswerVote(event, answer._id, "upvote")
-                  }
-                >
-                  Upvote
-                </button>
-                <button
-                  onClick={(event) =>
-                    handleAnswerVote(event, answer._id, "downvote")
-                  }
-                >
-                  Downvote
-                </button>
-              </div>
-            )}
-            <p className="answerText">{renderWithLinks(answer.text)}</p>
-            <small className="answerAuthor">
-              {answer.ans_by.username}{" "}
-              {timeSince(new Date(answer.createdAt), "answer").time}
-              {timeSince(new Date(answer.createdAt), "answer").addAgo
-                ? " ago"
-                : ""}
-            </small>
-            {/* Button to mark an answer as accepted, visible only to the question asker */}
-            {currentUser && currentUser.user.id === questionAskerId && (
-              <button onClick={() => handleAcceptAnswer(answer._id)}>
-                Accept Answer
-              </button>
-            )}
-            {/* Indicator for the accepted answer */}
-            {question.accepted_answer &&
-              question.accepted_answer._id === answer._id.toString() && (
-                <div className="accepted-answer-indicator">
-                  <strong>Accepted Answer</strong>
+        {paginatedAnswers.map((answer) => {
+          console.log('Paginated answer:', answer);
+          return (
+            <div key={answer._id} className="answer">
+              {/* Answer score visible to all users */}
+              <span className="answer-score">Score: {answer.score}</span>
+              {/* Answer voting buttons shown only to logged-in users */}
+              {currentUser && (
+                <div className="answer-vote-buttons">
+                  <button
+                    onClick={(event) =>
+                      handleAnswerVote(event, answer._id, "upvote")
+                    }
+                  >
+                    Upvote
+                  </button>
+                  <button
+                    onClick={(event) =>
+                      handleAnswerVote(event, answer._id, "downvote")
+                    }
+                  >
+                    Downvote
+                  </button>
                 </div>
               )}
-            <hr style={{ borderStyle: "dotted" }} />
-          </div>
-        ))}
+              <p className="answerText">{renderWithLinks(answer.text)}</p>
+              <small className="answerAuthor">
+                {answer.ans_by.username}{" "}
+                {timeSince(new Date(answer.createdAt), "answer").time}
+                {timeSince(new Date(answer.createdAt), "answer").addAgo
+                  ? " ago"
+                  : ""}
+              </small>
+              {/* Button to mark an answer as accepted, visible only to the question asker */}
+              {currentUser && currentUser.user.id === questionAskerId && (
+                <button onClick={() => handleAcceptAnswer(answer._id)}>
+                  Accept Answer
+                </button>
+              )}
+              {/* Indicator for the accepted answer */}
+              {question.accepted_answer &&
+                question.accepted_answer._id === answer._id.toString() && (
+                  <div className="accepted-answer-indicator">
+                    <strong>Accepted Answer</strong>
+                  </div>
+                )}
+              <div className="answer-comments">
+                {answer.comments.map((comment) => {
+                  console.log('Comment:', comment);
+                  console.log('Commented by:', comment.commented_by);
+                  console.log('Created at:', comment.createdAt);
+                  return (
+                    <div key={comment._id} className="comment">
+                      <p>{comment.text}</p>
+                      <small>
+                        Commented by {comment.commented_by ? comment.commented_by.username : "Unknown User"}{" "}
+                        {timeSince(new Date(comment.createdAt), "comment").time}
+                        {timeSince(new Date(comment.createdAt), "comment").addAgo
+                          ? " ago"
+                          : ""}
+                      </small>
+                      <div>Votes: {comment.votes}</div>
+                    </div>
+                  );
+                })}
+                {currentUser && (
+                  <form onSubmit={(e) => handleAddComment(e, answer._id)}>
+                    <input
+                      type="text"
+                      value={commentText[answer._id] || ""}
+                      onChange={(e) => setCommentText(prevCommentText => ({ ...prevCommentText, [answer._id]: e.target.value }))}
+                      placeholder="Add a comment"
+                    />
+                    <button type="submit">Submit</button>
+                  </form>
+                )}
+              </div>
+              <hr style={{ borderStyle: "dotted" }} />
+            </div>
+          );
+        })}
       </div>
 
       {/* Pagination Controls */}
