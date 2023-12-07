@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Tag from "./tag";
-import { timeSince } from "../timeHelper";
+import Tag from "./tag.js";
+import { timeSince } from "../timeHelper.js";
 import PropTypes from "prop-types";
 import { useAuth } from "./authContext.js";
 import useData from "./usedata.js";
@@ -20,7 +20,7 @@ const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
  */
 function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   const { currentUser } = useAuth();
-  const { upvoteAnswer, downvoteAnswer } = useData();
+  const { upvoteAnswer, downvoteAnswer, acceptAnswer } = useData();
   const answersPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -31,6 +31,13 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   const otherAnswers = answers.filter(
     (answer) => answer._id !== question.accepted_answer
   );
+
+  const questionAskerId = question.asked_by._id.toString();
+
+  const handleAcceptAnswer = async (answerId) => {
+    await acceptAnswer(question._id, answerId);
+    // Handle any UI updates
+  };
 
   // Calculate the total number of pages
   const totalPages = Math.ceil(
@@ -56,13 +63,13 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
     : answers.slice(startIndex, startIndex + answersPerPage);
 
   const handleAnswerVote = async (event, answerId, voteType) => {
-    event.stopPropagation(); // Prevent the click event from bubbling up.
+    event.stopPropagation();
     if (voteType === "upvote") {
       await upvoteAnswer(answerId);
     } else {
       await downvoteAnswer(answerId);
     }
-    // Optionally refresh the answers list or optimistically update the UI.
+    //  refresh the answers list or optimistically
   };
 
   /**
@@ -104,6 +111,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
 
     return parts;
   };
+
   return (
     <div className="answer-page">
       {/* Question section with score visible to all users */}
@@ -192,6 +200,19 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
                 ? " ago"
                 : ""}
             </small>
+            {/* Button to mark an answer as accepted, visible only to the question asker */}
+            {currentUser && currentUser.user.id === questionAskerId && (
+              <button onClick={() => handleAcceptAnswer(answer._id)}>
+                Accept Answer
+              </button>
+            )}
+            {/* Indicator for the accepted answer */}
+            {question.accepted_answer &&
+              question.accepted_answer._id === answer._id.toString() && (
+                <div className="accepted-answer-indicator">
+                  <strong>Accepted Answer</strong>
+                </div>
+              )}
             <hr style={{ borderStyle: "dotted" }} />
           </div>
         ))}
