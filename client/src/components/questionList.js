@@ -94,7 +94,7 @@ function QuestionList({
 
   // Sorting functions
   const sortByNewest = (a, b) =>
-    new Date(b.ask_date_time) - new Date(a.ask_date_time);
+    new Date(b.createdAt) - new Date(a.createdAt);
   const sortByActive = (a, b) => b.views - a.views;
 
   useEffect(() => {

@@ -1,76 +1,124 @@
 // Run this script to test your schema
 // Start the mongoDB service as a background process before running the script
 // Pass URL of your mongoDB instance as first argument(e.g., mongodb://127.0.0.1:27017/fake_so)
-let userArgs = process.argv.slice(2);
 
-if (!userArgs[0].startsWith('mongodb')) {
-    console.log('ERROR: You need to specify a valid mongodb URL as the first argument');
-    return
+
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const faker = require('faker');
+
+// Your existing Mongoose models
+const User = require('./models/users');
+const Tag = require('./models/tags');
+const Question = require('./models/questions');
+const Answer = require('./models/answers');
+
+mongoose.connect('mongodb://127.0.0.1:27017/fake_so', { useNewUrlParser: true, useUnifiedTopology: true });
+
+function randomDate(start, end) {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
-let Tag = require('./models/tags')
-let Answer = require('./models/answers')
-let Question = require('./models/questions')
 
+async function createUsers(num) {
+  const users = [];
+  for (let i = 0; i < num; i++) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash('password123', salt);
+    const createdAt = randomDate(new Date(2020, 0, 1), new Date());
 
-let mongoose = require('mongoose');
-let mongoDB = userArgs[0];
-mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
-// mongoose.Promise = global.Promise;
-let db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
-let tags = [];
-let answers = [];
-function tagCreate(name) {
-  let tag = new Tag({ name: name });
-  return tag.save();
-}
-
-function answerCreate(text, ans_by, ans_date_time) {
-  answerdetail = {text:text};
-  if (ans_by != false) answerdetail.ans_by = ans_by;
-  if (ans_date_time != false) answerdetail.ans_date_time = ans_date_time;
-
-  let answer = new Answer(answerdetail);
-  return answer.save();
-}
-
-function questionCreate(title, text, tags, answers, asked_by, ask_date_time, views) {
-  qstndetail = {
-    title: title,
-    text: text,
-    tags: tags,
-    asked_by: asked_by
+    users.push(new User({
+      username: faker.internet.userName(),
+      email: faker.internet.email(),
+      password: hashedPassword,
+      dateCreated: createdAt, 
+    }));
   }
-  if (answers != false) qstndetail.answers = answers;
-  if (ask_date_time != false) qstndetail.ask_date_time = ask_date_time;
-  if (views != false) qstndetail.views = views;
-
-  let qstn = new Question(qstndetail);
-  return qstn.save();
+  return User.insertMany(users);
 }
 
-const populate = async () => {
-  let t1 = await tagCreate('react');
-  let t2 = await tagCreate('javascript');
-  let t3 = await tagCreate('android-studio');
-  let t4 = await tagCreate('shared-preferences');
-  let a1 = await answerCreate('React Router is mostly a wrapper around the history library. history handles interaction with the browser\'s window.history for you with its browser and hash histories. It also provides a memory history which is useful for environments that don\'t have a global history. This is particularly useful in mobile app development (react-native) and unit testing with Node.', 'hamkalo', new Date('2023-11-20T03:24:42'));
-  let a2 = await answerCreate('On my end, I like to have a single history object that I can carry even outside components. I like to have a single history.js file that I import on demand, and just manipulate it. You just have to change BrowserRouter to Router, and specify the history prop. This doesn\'t change anything for you, except that you have your own history object that you can manipulate as you want. You need to install history, the library used by react-router.', 'azad', new Date('2023-11-25T08:24:00'));
-  let a3 = await answerCreate('Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background.', 'abaya', new Date('2023-11-18T09:24:00'));
-  let a4 = await answerCreate('YourPreference yourPrefrence = YourPreference.getInstance(context); yourPreference.saveData(YOUR_KEY,YOUR_VALUE);', 'alia', new Date('2023-11-12T03:30:00'));
-  let a5 = await answerCreate('I just found all the above examples just too confusing, so I wrote my own. ', 'sana', new Date('2023-11-01T15:24:19'));
-  await questionCreate('Programmatically navigate using React router', 'the alert shows the proper index for the li clicked, and when I alert the variable within the last function I\'m calling, moveToNextImage(stepClicked), the same value shows but the animation isn\'t happening. This works many other ways, but I\'m trying to pass the index value of the list item clicked to use for the math to calculate.', [t1, t2], [a1, a2], 'Joji John', new Date('2022-01-20T03:24:00'), false);
-  await questionCreate('android studio save string shared preference, start activity and load the saved string', 'I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.', [t3, t4, t2], [a3, a4, a5], 'saltyPeter', new Date('2023-10-01T11:24:30'), 121);
-  if(db) db.close();
-  console.log('done');
+
+async function createTags(num) {
+  const tags = [];
+  for (let i = 0; i < num; i++) {
+    tags.push(new Tag({
+      name: faker.lorem.word(),
+    }));
+  }
+  return Tag.insertMany(tags);
 }
 
-populate()
-  .catch((err) => {
-    console.log('ERROR: ' + err);
-    if(db) db.close();
-  });
+async function createQuestions(users, tags, num) {
+  const questions = [];
+  for (let i = 0; i < num; i++) {
+    const createdAt = randomDate(new Date(2020, 0, 1), new Date());
 
-console.log('processing ...');
+    questions.push(new Question({
+      title: faker.lorem.sentence(),
+      text: faker.lorem.paragraph(),
+      tags: faker.random.arrayElements(tags, 2).map(tag => tag._id),
+      asked_by: faker.random.arrayElement(users)._id,
+      views: faker.datatype.number(100),
+      score: faker.datatype.number(100),
+      createdAt, 
+      updatedAt: createdAt, 
+    }));
+  }
+  return Question.insertMany(questions);
+}
+
+
+async function createAnswers(users, questions, num) {
+  const answers = [];
+  for (let i = 0; i < num; i++) {
+    const createdAt = randomDate(new Date(2020, 0, 1), new Date());
+
+    // Create an answer
+    const answer = new Answer({
+      text: faker.lorem.paragraph(),
+      ans_by: faker.random.arrayElement(users)._id,
+      score: faker.datatype.number(100),
+      createdAt, // Set the random creation date
+      updatedAt: createdAt, // Set updatedAt to the same as createdAt
+    });
+
+    // Add the answer to the answers array
+    answers.push(answer);
+
+    // Associate the answer with the question
+    const question = faker.random.arrayElement(questions);
+    question.answers.push(answer._id);
+
+    // Randomly decide whether to accept this answer
+    if (Math.random() < 0.3 && !question.accepted_answer) {
+      question.accepted_answer = answer._id;
+    }
+
+    // Save the question
+    await question.save();
+  }
+
+  // Insert all answers at once
+  return Answer.insertMany(answers);
+}
+
+
+
+async function main() {
+  try {
+    await mongoose.connection.dropDatabase();
+
+    const users = await createUsers(10);
+    const tags = await createTags(5);
+    const questions = await createQuestions(users, tags, 20);
+    const answers = await createAnswers(users, questions, 50);
+
+    console.log('Database populated!');
+  } catch (err) {
+    console.error(err);
+  } finally {
+    mongoose.disconnect();
+  }
+}
+
+main();
