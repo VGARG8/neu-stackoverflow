@@ -45,6 +45,9 @@ const useData = () => {
   const fetchQuestionById = async (id) => {
     try {
       const response = await axios.get(`${SERVER_URL}/questions/${id}`);
+      console.log("Response data:", response.data);
+      console.log("Answers:", response.data.answers);
+      console.log("Accepted answer:", response.data.accepted_answer);
       return response.data;
     } catch (err) {
       console.error("Error fetching question by ID:", err);

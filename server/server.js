@@ -3,7 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const cookieParser = require('cookie-parser'); 
 
-
+// Require the Comment model
+require('./models/comments');
 
 // import routes
 const answerRoutes = require("./routes/answerRoutes");
