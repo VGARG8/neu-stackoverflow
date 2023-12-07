@@ -66,7 +66,9 @@ const useData = () => {
   // Add a new question
   const addQuestion = async (question) => {
     try {
-      await axios.post(`${SERVER_URL}/questions`, question, { withCredentials: true});
+      await axios.post(`${SERVER_URL}/questions`, question, {
+        withCredentials: true,
+      });
       fetchQuestions(); // Refresh the questions list
     } catch (err) {
       console.error("Error adding a new question:", err);
@@ -76,13 +78,14 @@ const useData = () => {
   // Add a new answer
   const addAnswer = async (qid, answerDetails) => {
     try {
-      // qid for attaching to the right question
       const payload = {
         ...answerDetails,
         questionId: qid,
       };
 
-      await axios.post(`${SERVER_URL}/answers`, payload);
+      await axios.post(`${SERVER_URL}/answers`, payload, {
+        withCredentials: true,
+      });
 
       // Fetch the updated question
       const updatedQuestion = await fetchQuestionById(qid);
@@ -132,13 +135,13 @@ const useData = () => {
     }
   };
 
-
-
-    // Function to handle upvoting a question
+  // Function to handle upvoting a question
   const upvoteQuestion = async (questionId) => {
     try {
-      await axios.post(`${SERVER_URL}/questions/${questionId}/upvote`);
-      // Refresh the questions list or optimistically update the UI
+      await axios.post(`${SERVER_URL}/questions/${questionId}/upvote`, {
+        withCredentials: true,
+      });
+      // optimistically update the UI
     } catch (err) {
       console.error("Error upvoting question:", err);
     }
@@ -147,36 +150,58 @@ const useData = () => {
   // Function to handle downvoting a question
   const downvoteQuestion = async (questionId) => {
     try {
-      await axios.post(`${SERVER_URL}/questions/${questionId}/downvote`);
-      // Refresh the questions list or optimistically update the UI
+      await axios.post(`${SERVER_URL}/questions/${questionId}/downvote`, {
+        withCredentials: true,
+      });
+      // optimistically update the UI
     } catch (err) {
       console.error("Error downvoting question:", err);
     }
   };
 
   // Function to handle upvoting an answer
-const upvoteAnswer = async (answerId) => {
-  try {
-    await axios.post(`${SERVER_URL}/answers/${answerId}/upvote`);
-    // Here you might want to refresh the answers list or
-    // optimistically update the UI to reflect the new vote count
-  } catch (err) {
-    console.error("Error upvoting answer:", err);
-  }
-};
+  const upvoteAnswer = async (answerId) => {
+    try {
+      await axios.post(`${SERVER_URL}/answers/${answerId}/upvote`, {
+        withCredentials: true,
+      });
 
-// Function to handle downvoting an answer
-const downvoteAnswer = async (answerId) => {
-  try {
-    await axios.post(`${SERVER_URL}/answers/${answerId}/downvote`);
-    // Similarly, you might refresh the answers list or
-    // optimistically update the UI here
-  } catch (err) {
-    console.error("Error downvoting answer:", err);
-  }
-};
+      // optimistically update the UI to reflect the new vote count
+    } catch (err) {
+      console.error("Error upvoting answer:", err);
+    }
+  };
 
+  // Function to handle downvoting an answer
+  const downvoteAnswer = async (answerId) => {
+    try {
+      await axios.post(`${SERVER_URL}/answers/${answerId}/downvote`, {
+        withCredentials: true,
+      });
 
+      // optimistically update the UI here
+    } catch (err) {
+      console.error("Error downvoting answer:", err);
+    }
+  };
+
+  const acceptAnswer = async (questionId, answerId) => {
+    try {
+      await axios.patch(
+        `${SERVER_URL}/questions/${questionId}/accept-answer`,
+        {
+          answerId,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      // ... handle the response and update the state ...
+    } catch (err) {
+      console.error("Error accepting answer:", err);
+    }
+  };
 
   // Fetch data
   useEffect(() => {
@@ -194,10 +219,11 @@ const downvoteAnswer = async (answerId) => {
     fetchQuestionById,
     fetchAnswersByQuestionId,
     incrementQuestionViews,
-    upvoteQuestion, 
+    upvoteQuestion,
     downvoteQuestion,
     upvoteAnswer,
-    downvoteAnswer
+    downvoteAnswer,
+    acceptAnswer,
   };
 };
 

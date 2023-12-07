@@ -136,9 +136,9 @@ function Header({
 
 Header.propTypes = {
   onSearch: PropTypes.func.isRequired,
-  questions: PropTypes.array.isRequired,
-  tags: PropTypes.array.isRequired,
-  answers: PropTypes.array.isRequired,
+  questions: PropTypes.array,
+  tags: PropTypes.array,
+  answers: PropTypes.array,
   onLoginClick: PropTypes.func.isRequired,
   onRegisterClick: PropTypes.func.isRequired,
   onProfileClick: PropTypes.func.isRequired

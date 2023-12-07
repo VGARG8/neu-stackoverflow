@@ -118,10 +118,10 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
 }
 
 AskQuestionForm.propTypes = {
-  question: PropTypes.object.isRequired,
-  answers: PropTypes.array.isRequired,
+  question: PropTypes.object,
+  answers: PropTypes.array,
   setActivePage: PropTypes.func.isRequired,
-  setSelectedTag: PropTypes.func.isRequired,
+  setSelectedTag: PropTypes.func,
   onSubmit: PropTypes.func.isRequired,
 };
 

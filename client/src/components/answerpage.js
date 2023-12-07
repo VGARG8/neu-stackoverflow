@@ -1,6 +1,6 @@
-import React from "react";
-import Tag from "./tag";
-import { timeSince } from "../timeHelper";
+import React, { useState } from "react";
+import Tag from "./tag.js";
+import { timeSince } from "../timeHelper.js";
 import PropTypes from "prop-types";
 import { useAuth } from "./authContext.js";
 import useData from "./usedata.js";
@@ -20,16 +20,56 @@ const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
  */
 function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   const { currentUser } = useAuth();
-  const { upvoteAnswer, downvoteAnswer } = useData();
+  const { upvoteAnswer, downvoteAnswer, acceptAnswer } = useData();
+  const answersPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Identify if there is an accepted answer and separate it from other answers
+  const acceptedAnswer = answers.find(
+    (answer) => answer._id === question.accepted_answer
+  );
+  const otherAnswers = answers.filter(
+    (answer) => answer._id !== question.accepted_answer
+  );
+
+  const questionAskerId = question.asked_by._id.toString();
+
+  const handleAcceptAnswer = async (answerId) => {
+    await acceptAnswer(question._id, answerId);
+    // Handle any UI updates
+  };
+
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(
+    (acceptedAnswer ? otherAnswers.length : answers.length) / answersPerPage
+  );
+
+  // Change page handler
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  // Calculate paginated answers
+  const startIndex = acceptedAnswer
+    ? (currentPage - 1) * answersPerPage
+    : currentPage * answersPerPage - answersPerPage;
+  const paginatedAnswers = acceptedAnswer
+    ? [
+        acceptedAnswer,
+        ...otherAnswers.slice(startIndex, startIndex + answersPerPage - 1),
+      ]
+    : answers.slice(startIndex, startIndex + answersPerPage);
 
   const handleAnswerVote = async (event, answerId, voteType) => {
-    event.stopPropagation(); // Prevent the click event from bubbling up.
+    event.stopPropagation();
     if (voteType === "upvote") {
       await upvoteAnswer(answerId);
     } else {
       await downvoteAnswer(answerId);
     }
-    // Optionally refresh the answers list or optimistically update the UI.
+    //  refresh the answers list or optimistically
   };
 
   /**
@@ -129,7 +169,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
       </div>
 
       <div className="answers">
-        {answers.map((answer) => (
+        {paginatedAnswers.map((answer) => (
           <div key={answer._id} className="answer">
             {/* Answer score visible to all users */}
             <span className="answer-score">Score: {answer.score}</span>
@@ -160,9 +200,41 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
                 ? " ago"
                 : ""}
             </small>
+            {/* Button to mark an answer as accepted, visible only to the question asker */}
+            {currentUser && currentUser.user.id === questionAskerId && (
+              <button onClick={() => handleAcceptAnswer(answer._id)}>
+                Accept Answer
+              </button>
+            )}
+            {/* Indicator for the accepted answer */}
+            {question.accepted_answer &&
+              question.accepted_answer._id === answer._id.toString() && (
+                <div className="accepted-answer-indicator">
+                  <strong>Accepted Answer</strong>
+                </div>
+              )}
             <hr style={{ borderStyle: "dotted" }} />
           </div>
         ))}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="pagination-controls">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
 
       {currentUser && (

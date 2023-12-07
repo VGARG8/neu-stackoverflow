@@ -1,31 +1,38 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-
+const authenticateJWT = require("../middlewares/auth");
 
 // import controllers
 const { postAnswer } = require("../controllers/postAnswer");
 const { getAnswers } = require("../controllers/getAnswers");
-const { postUpvoteAnswer, postDownvoteAnswer } = require('../controllers/answerVote');
+const {
+  postUpvoteAnswer,
+  postDownvoteAnswer,
+} = require("../controllers/answerVote");
+const { deleteAnswer } = require("../controllers/deleteAnswer");
+const { postAcceptAnswer } = require("../controllers/acceptAnswer");
 
 // routing
-const UPVOTE_ANSWER_ROUTE = '/:id/upvote';
-const DOWNVOTE_ANSWER_ROUTE = '/:id/downvote';
-
-
-
-
+const UPVOTE_ANSWER_ROUTE = "/:id/upvote";
+const DOWNVOTE_ANSWER_ROUTE = "/:id/downvote";
+const ACCEPT_ANSWER_ROUTE = "/accept-answer";
 
 // Get all answers
-router.get('/', getAnswers);
+router.get("/", getAnswers);
 
 // Post a new answer
-router.post('/', postAnswer);
+router.post("/", authenticateJWT, postAnswer);
 
+// route to upvote answer
+router.post(UPVOTE_ANSWER_ROUTE, authenticateJWT, postUpvoteAnswer);
 
-router.post(UPVOTE_ANSWER_ROUTE, postUpvoteAnswer);
+// route to downvote answer
+router.post(DOWNVOTE_ANSWER_ROUTE, authenticateJWT, postDownvoteAnswer);
 
+// Route to accept an answer for a question
+router.patch(ACCEPT_ANSWER_ROUTE, authenticateJWT, postAcceptAnswer);
 
-router.post(DOWNVOTE_ANSWER_ROUTE, postDownvoteAnswer);
-
+// route to delete answer
+router.delete("/:id", authenticateJWT, deleteAnswer);
 
 module.exports = router;
