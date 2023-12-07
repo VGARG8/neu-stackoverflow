@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useAuth } from "./authContext";
 
@@ -25,19 +25,11 @@ function Header({
 
   // Early return in case the context is not available
   if (!auth) {
-    console.error("AuthContext is not available.");
     return null;
   }
 
   // Now that we've checked that auth is valid, we can destructure it safely
-  const { currentUser, logout } = useAuth();
-
-  useEffect(() => {
-    if (currentUser) {
-      // Log only when currentUser is not null
-      console.log(currentUser);
-    }
-  }, [currentUser]);
+  const { currentUser, logout } = auth;
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
@@ -80,21 +72,30 @@ function Header({
 
       // Otherwise use tag search logic
       const searchResults = questions.filter((question) => {
-        const questionTags = question.tagIds.map(
-          (tagId) => tags.find((tag) => tag.tid === tagId).name
-        );
-        const questionAnswers = question.ansIds.map((ansId) =>
-          answers.find((answer) => answer.aid === ansId).text.toLowerCase()
-        );
+        const questionTags = question.tags
+          ? question.tags.map((tagId) => {
+              const actualId = tagId._id; // Extract the actual ID
+              const tag = tags.find((tag) => tag._id === actualId.toString());
+              return tag ? tag.name : null;
+            })
+          : [];
 
-        const doesTagMatch = tagsToSearch.every((tag) =>
+        const doesTagMatch = tagsToSearch.some((tag) =>
           questionTags.includes(tag)
         );
+
+        const questionAnswers = question.answers
+          ? question.answers.map((ansId) => {
+              const answer = answers.find((answer) => answer._id === ansId);
+              return answer ? answer.text.toLowerCase() : null;
+            })
+          : [];
+
         const doesWordMatchInAnswers = questionAnswers.some((answerText) =>
-          words.some((word) => answerText.includes(word))
+          answerText && words.some((word) => answerText.includes(word))
         );
 
-        return doesTagMatch && doesWordMatchInAnswers;
+        return doesTagMatch || doesWordMatchInAnswers;
       });
 
       onSearch(searchResults);
