@@ -11,11 +11,15 @@ const {
 } = require("../controllers/answerVote");
 const { deleteAnswer } = require("../controllers/deleteAnswer");
 const { postAcceptAnswer } = require("../controllers/acceptAnswer");
+const { postComment } = require("../controllers/postComment"); // New controller
+
 
 // routing
 const UPVOTE_ANSWER_ROUTE = "/:id/upvote";
 const DOWNVOTE_ANSWER_ROUTE = "/:id/downvote";
 const ACCEPT_ANSWER_ROUTE = "/accept-answer";
+const COMMENT_ROUTE = "/:id/comments"; 
+
 
 // Get all answers
 router.get("/", getAnswers);
@@ -34,5 +38,8 @@ router.patch(ACCEPT_ANSWER_ROUTE, authenticateJWT, postAcceptAnswer);
 
 // route to delete answer
 router.delete("/:id", authenticateJWT, deleteAnswer);
+
+// Post a new comment to an answer
+router.post(COMMENT_ROUTE, authenticateJWT, postComment);
 
 module.exports = router;

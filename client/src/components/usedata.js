@@ -105,6 +105,44 @@ const useData = () => {
     }
   };
 
+  // Add a new comment
+  const addComment = async (parentId, commentDetails) => {
+    try {
+      const payload = {
+        ...commentDetails,
+        parentId,
+      };
+
+      console.log('Payload:', payload); // Log the payload
+
+      const endpoint = commentDetails.parentType === 'Question' 
+        ? `${SERVER_URL}/questions/${parentId}/comments` 
+        : `${SERVER_URL}/answers/${parentId}/comments`;
+
+      await axios.post(endpoint, payload, {
+        withCredentials: true,
+      });
+
+      // Fetch the updated question only if parentType is 'Answer'
+      let updatedQuestion;
+      if (commentDetails.parentType === 'Answer') {
+        updatedQuestion = await fetchQuestionById(commentDetails.questionId);
+      } else {
+        updatedQuestion = await fetchQuestionById(parentId);
+      }
+
+      // Update the questions array with the updated question
+      setData((prevData) => {
+        const updatedQuestions = prevData.questions.map((question) =>
+          question._id === parentId ? updatedQuestion : question
+        );
+        return { ...prevData, questions: updatedQuestions };
+      });
+    } catch (err) {
+      console.error("Error adding a new comment:", err);
+    }
+  };
+
   const incrementQuestionViews = async (questionId) => {
     try {
       // Make a request to increment the views
@@ -200,7 +238,6 @@ const useData = () => {
         }
       );
 
-      // ... handle the response and update the state ...
     } catch (err) {
       console.error("Error accepting answer:", err);
     }
@@ -219,6 +256,7 @@ const useData = () => {
     error,
     addQuestion,
     addAnswer,
+    addComment, 
     fetchQuestionById,
     fetchAnswersByQuestionId,
     incrementQuestionViews,
