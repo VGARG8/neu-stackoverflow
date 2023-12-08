@@ -15,6 +15,7 @@ const {
 } = require("../controllers/questionVote");
 const { deleteQuestion } = require("../controllers/deleteQuestion");
 const { postAcceptAnswer } = require("../controllers/acceptAnswer");
+const { postComment } = require("../controllers/postComment"); 
 
 // routes
 const UPVOTE_QUESTION_ROUTE = "/:id/upvote";
@@ -22,6 +23,7 @@ const DOWNVOTE_QUESTION_ROUTE = "/:id/downvote";
 const INCREMENT_QUESTION_VIEW_ROUTE = "/:id/increment-views";
 const QUESTION_BY_ID_ROUTE = "/:id";
 const ACCEPTED_ANSWER_ROUTE = "/:id/accept-answer";
+const COMMENT_ROUTE = "/:id/comments"; 
 
 // Get questions
 router.get("/", getQuestions);
@@ -43,5 +45,8 @@ router.delete("/:id", authenticateJWT, deleteQuestion);
 
 router.post(UPVOTE_QUESTION_ROUTE, authenticateJWT, postUpvoteQuestion);
 router.post(DOWNVOTE_QUESTION_ROUTE, authenticateJWT, postDownvoteQuestion);
+
+// Post a new comment
+router.post(COMMENT_ROUTE, authenticateJWT, postComment); 
 
 module.exports = router;

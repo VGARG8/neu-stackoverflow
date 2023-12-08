@@ -76,11 +76,12 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
     //  refresh the answers list or optimistically
   };
 
-  const handleAddComment = async (e, postId) => {
+  const handleAddComment = async (e, parentId, parentType, questionId) => {
     e.preventDefault();
-    if (commentText[postId]?.trim() === "") return;
-    await addComment(postId, commentText[postId]);
-    setCommentText(prevCommentText => ({ ...prevCommentText, [postId]: "" }));
+    if (commentText[parentId]?.trim() === "") return;
+    const userId = currentUser.user.id; // Assuming currentUser is the authenticated user
+    await addComment(parentId, { text: commentText[parentId], parentType, userId, questionId });
+    setCommentText(prevCommentText => ({ ...prevCommentText, [parentId]: "" }));
   };
 
   /**
@@ -189,7 +190,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
           );
         })}
         {currentUser && (
-          <form onSubmit={(e) => handleAddComment(e, question._id)}>
+          <form onSubmit={(e) => handleAddComment(e, question._id, 'Question')}>
             <input
               type="text"
               value={commentText[question._id] || ""}
@@ -279,7 +280,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
                   );
                 })}
                 {currentUser && (
-                  <form onSubmit={(e) => handleAddComment(e, answer._id)}>
+                  <form onSubmit={(e) => handleAddComment(e, answer._id, 'Answer', question._id)}>
                     <input
                       type="text"
                       value={commentText[answer._id] || ""}
