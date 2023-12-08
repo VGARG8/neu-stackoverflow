@@ -243,6 +243,29 @@ const useData = () => {
     }
   };
 
+
+const upvoteComment = async (commentId) => {
+  try {
+    await axios.post(`${SERVER_URL}/comments/${commentId}/upvote`, {}, {
+      withCredentials: true,
+    });
+    // Handle the response here
+  } catch (err) {
+    console.error("Error upvoting comment:", err);
+  }
+};
+
+const downvoteComment = async (commentId) => {
+  try {
+    await axios.post(`${SERVER_URL}/comments/${commentId}/downvote`, {}, {
+      withCredentials: true,
+    });
+    // Handle the response here
+  } catch (err) {
+    console.error("Error downvoting comment:", err);
+  }
+};
+
   // Fetch data
   useEffect(() => {
     fetchQuestions();
@@ -265,6 +288,8 @@ const useData = () => {
     upvoteAnswer,
     downvoteAnswer,
     acceptAnswer,
+    upvoteComment,
+    downvoteComment
   };
 };
 

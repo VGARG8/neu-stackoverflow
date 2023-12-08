@@ -24,7 +24,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   console.log('Answers:', answers);
 
   const { currentUser } = useAuth();
-  const { upvoteAnswer, downvoteAnswer, acceptAnswer, addComment, upvoteQuestion, downvoteQuestion } = useData();
+  const { upvoteAnswer, downvoteAnswer, acceptAnswer, addComment, upvoteQuestion, downvoteQuestion, upvoteComment, downvoteComment } = useData();
   const answersPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const [commentText, setCommentText] = useState({});
@@ -87,6 +87,16 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
     //  refresh the answers list or optimistically
   };
 
+  const handleCommentVote = async (event, commentId, voteType) => {
+    event.stopPropagation();
+    if (voteType === "upvote") {
+      await upvoteComment(commentId);
+    } else {
+      await downvoteComment(commentId);
+    }
+    // refresh the comments list or optimistically update the UI
+  };
+
   const handleAddComment = async (e, parentId, parentType, questionId) => {
     e.preventDefault();
     if (commentText[parentId]?.trim() === "") return;
@@ -139,23 +149,25 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
     <div className="answer-page">
       {/* Question section with score visible to all users */}
       <div className="question-score-section question">
-        <div className="vote-section">
-          <button
-            onClick={(event) =>
-              handleQuestionVote(event, "upvote")
+        {currentUser && (
+          <div className="vote-section">
+            <button
+              onClick={(event) =>
+                handleQuestionVote(event, "upvote")
+              }
+            >
+              Upvote
+            </button>
+            <span className="question-score">Score: {question.score}</span>
+            <button
+              onClick={(event) =>
+                handleQuestionVote(event, "downvote")
             }
-          >
-            Upvote
-          </button>
-          <span className="question-score">Score: {question.score}</span>
-          <button
-            onClick={(event) =>
-              handleQuestionVote(event, "downvote")
-            }
-          >
-            Downvote
-          </button>
-        </div>
+            >
+              Downvote
+            </button>
+          </div>
+        )}
       </div>
 
       <div id="answersHeader" className="row">
@@ -193,7 +205,25 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
                   ? " ago"
                   : ""}
               </small>
-              <div>Votes: {comment.votes}</div>
+              {currentUser && (
+                <div className="comment-vote-section">
+                  <button
+                    onClick={(event) =>
+                      handleCommentVote(event, comment._id, "upvote")
+                    }
+                  >
+                    Upvote
+                  </button>
+                  <span className="comment-score">Score: {comment.votes}</span>
+                  <button
+                    onClick={(event) =>
+                      handleCommentVote(event, comment._id, "downvote")
+                    }
+                  >
+                    Downvote
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
@@ -227,23 +257,25 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
           return (
             <div key={answer._id} className="answer">
               {/* Answer score visible to all users */}
-              <div className="vote-section">
-                <button
-                  onClick={(event) =>
-                    handleAnswerVote(event, answer._id, "upvote")
-                  }
-                >
-                  Upvote
-                </button>
-                <span className="answer-score">Score: {answer.score}</span>
-                <button
-                  onClick={(event) =>
-                    handleAnswerVote(event, answer._id, "downvote")
-                  }
-                >
-                  Downvote
-                </button>
-              </div>
+              {currentUser && (
+                <div className="vote-section">
+                  <button
+                    onClick={(event) =>
+                      handleAnswerVote(event, answer._id, "upvote")
+                    }
+                  >
+                    Upvote
+                  </button>
+                  <span className="answer-score">Score: {answer.score}</span>
+                  <button
+                    onClick={(event) =>
+                      handleAnswerVote(event, answer._id, "downvote")
+                    }
+                  >
+                    Downvote
+                  </button>
+                </div>
+              )}
               <p className="answerText">{renderWithLinks(answer.text)}</p>
               <small className="answerAuthor">
                 {answer.ans_by.username}{" "}
@@ -280,7 +312,25 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
                           ? " ago"
                           : ""}
                       </small>
-                      <div>Votes: {comment.votes}</div>
+                      {currentUser && (
+                        <div className="comment-vote-section">
+                          <button
+                            onClick={(event) =>
+                              handleCommentVote(event, comment._id, "upvote")
+                            }
+                          >
+                            Upvote
+                          </button>
+                          <span className="comment-score">Score: {comment.votes}</span>
+                          <button
+                            onClick={(event) =>
+                              handleCommentVote(event, comment._id, "downvote")
+                            }
+                          >
+                            Downvote
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
