@@ -4,6 +4,7 @@ import { timeSince } from "../timeHelper.js";
 import PropTypes from "prop-types";
 import { useAuth } from "./authContext.js";
 import useData from "./usedata.js";
+import '../stylesheets/answerPage.css';
 
 const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
 
@@ -23,7 +24,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   console.log('Answers:', answers);
 
   const { currentUser } = useAuth();
-  const { upvoteAnswer, downvoteAnswer, acceptAnswer, addComment } = useData();
+  const { upvoteAnswer, downvoteAnswer, acceptAnswer, addComment, upvoteQuestion, downvoteQuestion } = useData();
   const answersPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const [commentText, setCommentText] = useState({});
@@ -41,6 +42,16 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   const handleAcceptAnswer = async (answerId) => {
     await acceptAnswer(question._id, answerId);
     // Handle any UI updates
+  };
+
+  const handleQuestionVote = async (event, voteType) => {
+    event.stopPropagation();
+    if (voteType === "upvote") {
+      await upvoteQuestion(question._id);
+    } else {
+      await downvoteQuestion(question._id);
+    }
+    // refresh the question or optimistically update the UI
   };
 
   // Calculate the total number of pages
@@ -127,27 +138,24 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   return (
     <div className="answer-page">
       {/* Question section with score visible to all users */}
-      <div className="question-score-section">
-        <span className="question-score">Score: {question.score}</span>
-        {/* Question voting section shown only to logged-in users */}
-        {currentUser && (
-          <div className="question-vote-buttons">
-            <button
-              onClick={(event) =>
-                handleAnswerVote(event, question._id, "upvote")
-              }
-            >
-              Upvote
-            </button>
-            <button
-              onClick={(event) =>
-                handleAnswerVote(event, question._id, "downvote")
-              }
-            >
-              Downvote
-            </button>
-          </div>
-        )}
+      <div className="question-score-section question">
+        <div className="vote-section">
+          <button
+            onClick={(event) =>
+              handleQuestionVote(event, "upvote")
+            }
+          >
+            Upvote
+          </button>
+          <span className="question-score">Score: {question.score}</span>
+          <button
+            onClick={(event) =>
+              handleQuestionVote(event, "downvote")
+            }
+          >
+            Downvote
+          </button>
+        </div>
       </div>
 
       <div id="answersHeader" className="row">
@@ -160,7 +168,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
         )}
       </div>
 
-      <div id="questionBody" className="row">
+      <div id="questionBody" className="row question">
         <span>{question.views} views</span>
         <p>{renderWithLinks(question.text)}</p>
         <small>
@@ -219,26 +227,23 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
           return (
             <div key={answer._id} className="answer">
               {/* Answer score visible to all users */}
-              <span className="answer-score">Score: {answer.score}</span>
-              {/* Answer voting buttons shown only to logged-in users */}
-              {currentUser && (
-                <div className="answer-vote-buttons">
-                  <button
-                    onClick={(event) =>
-                      handleAnswerVote(event, answer._id, "upvote")
-                    }
-                  >
-                    Upvote
-                  </button>
-                  <button
-                    onClick={(event) =>
-                      handleAnswerVote(event, answer._id, "downvote")
-                    }
-                  >
-                    Downvote
-                  </button>
-                </div>
-              )}
+              <div className="vote-section">
+                <button
+                  onClick={(event) =>
+                    handleAnswerVote(event, answer._id, "upvote")
+                  }
+                >
+                  Upvote
+                </button>
+                <span className="answer-score">Score: {answer.score}</span>
+                <button
+                  onClick={(event) =>
+                    handleAnswerVote(event, answer._id, "downvote")
+                  }
+                >
+                  Downvote
+                </button>
+              </div>
               <p className="answerText">{renderWithLinks(answer.text)}</p>
               <small className="answerAuthor">
                 {answer.ans_by.username}{" "}
