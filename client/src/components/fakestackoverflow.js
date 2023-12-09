@@ -211,7 +211,8 @@ function FakeStackOverflow() {
 
 
             {(activePage === "questions" ||
-              activePage === "questionsByTag") && (
+              activePage === "questionsByTag" ||
+              activePage === "search") && (
               <QuestionList
                 setSelectedTag={setSelectedTag}
                 questions={displayedQuestions}

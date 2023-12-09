@@ -1,4 +1,5 @@
 const Answer = require("../models/answers");
+
 const Question = require("../models/questions");
 
 exports.deleteAnswer = async (req, res) => {
@@ -31,4 +32,5 @@ exports.deleteAnswer = async (req, res) => {
         console.error("Error deleting answer:", error);
         res.status(500).send(error);
     }
+
 };

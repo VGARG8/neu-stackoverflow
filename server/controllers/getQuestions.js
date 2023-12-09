@@ -1,6 +1,7 @@
 const Question = require("../models/questions");
 const Answer = require("../models/answers");
 const Tag = require("../models/tags");
+const Comment = require("../models/comments");
 
 exports.getQuestions = async (req, res) => {
   try {
@@ -14,16 +15,14 @@ exports.getQuestions = async (req, res) => {
         path: 'asked_by', 
         select: 'username reputation'
       })
+      .populate({
+        path: 'comments', 
+        populate: { path: 'commented_by', select: 'username' }
+      })
       .select('title text tags asked_by views score createdAt updatedAt author_email');
-    questions.forEach(question => {
-      if (question.author_email) {
-        console.log('Author email fetched successfully:', question.author_email);
-      } else {
-        console.log('Author email not fetched or does not exist.');
-      }
-    });
     res.json(questions);
   } catch (error) {
+    console.error("Error fetching questions:", error); // Added this line
     res.status(500).send(error);
   }
 };

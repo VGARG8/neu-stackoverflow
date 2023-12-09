@@ -28,15 +28,51 @@ function QuestionList({
   const { currentUser } = useAuth();
   const { upvoteQuestion, downvoteQuestion } = useData();
 
+  const [isMounted, setIsMounted] = useState(true);
+
+  const questionsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    setTotalPages(Math.ceil(displayedQuestions.length / questionsPerPage));
+  }, [displayedQuestions]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const paginatedQuestions = displayedQuestions.slice(
+    (currentPage - 1) * questionsPerPage,
+    currentPage * questionsPerPage
+  );
+
+  useEffect(() => {
+    // Set isMounted to true on mount
+    setIsMounted(true);
+
+    // Cleanup function to run when the component unmounts
+    return () => {
+      setIsMounted(false); // Set isMounted to false when the component unmounts
+    };
+  }, []);
 
   const handleVote = async (event, questionId, voteType) => {
     event.stopPropagation();
+
+    if (!isMounted) return;
+
     if (voteType === "upvote") {
       await upvoteQuestion(questionId);
     } else {
       await downvoteQuestion(questionId);
     }
     // Optionally refresh the question list or optimistically update the UI
+    if (isMounted) {
+      //update ui since the component is still mounted and visable by user
+    }
   };
 
   // Handler for when a question is clicked. Increments its view count.
@@ -58,7 +94,7 @@ function QuestionList({
 
   // Sorting functions
   const sortByNewest = (a, b) =>
-    new Date(b.ask_date_time) - new Date(a.ask_date_time);
+    new Date(b.createdAt) - new Date(a.createdAt);
   const sortByActive = (a, b) => b.views - a.views;
 
   useEffect(() => {
@@ -109,7 +145,7 @@ function QuestionList({
           <button onClick={() => setSortMode("unanswered")}>Unanswered</button>
         </div>
       </div>
-      {displayedQuestions.map((question) => {
+      {paginatedQuestions.map((question) => {
         const timeInfo = timeSince(new Date(question.createdAt), "question");
 
         return (
@@ -147,10 +183,18 @@ function QuestionList({
             <div className="question-voting">
               {currentUser && (
                 <div className="question-vote-buttons">
-                  <button onClick={(event) => handleVote(event, question._id, "upvote")}>
+                  <button
+                    onClick={(event) =>
+                      handleVote(event, question._id, "upvote")
+                    }
+                  >
                     Upvote
                   </button>
-                  <button onClick={(event) => handleVote(event, question._id, "downvote")}>
+                  <button
+                    onClick={(event) =>
+                      handleVote(event, question._id, "downvote")
+                    }
+                  >
                     Downvote
                   </button>
                 </div>
@@ -160,6 +204,23 @@ function QuestionList({
           </div>
         );
       })}
+      <div className="pagination-controls">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
@@ -167,7 +228,7 @@ function QuestionList({
 QuestionList.propTypes = {
   setSelectedTag: PropTypes.func.isRequired,
   questions: PropTypes.array.isRequired,
-  tags: PropTypes.array.isRequired,
+  tags: PropTypes.array,
   setActivePage: PropTypes.func.isRequired,
   onQuestionClick: PropTypes.func.isRequired,
   incrementQuestionViews: PropTypes.func.isRequired,

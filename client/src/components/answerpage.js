@@ -1,9 +1,10 @@
-import React from "react";
-import Tag from "./tag";
-import { timeSince } from "../timeHelper";
+import React, { useState } from "react";
+import Tag from "./tag.js";
+import { timeSince } from "../timeHelper.js";
 import PropTypes from "prop-types";
 import { useAuth } from "./authContext.js";
 import useData from "./usedata.js";
+import '../stylesheets/answerPage.css';
 
 const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
 
@@ -19,17 +20,89 @@ const hyperlinkPattern = /\[([^\]]+)]\((https?:\/\/[^)]+)\)/g;
  * @returns {JSX.Element} The rendered question and its answers.
  */
 function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
+  console.log('Question:', question);
+  console.log('Answers:', answers);
+
   const { currentUser } = useAuth();
-  const { upvoteAnswer, downvoteAnswer } = useData();
+  const { upvoteAnswer, downvoteAnswer, acceptAnswer, addComment, upvoteQuestion, downvoteQuestion, upvoteComment, downvoteComment } = useData();
+  const answersPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [commentText, setCommentText] = useState({});
+
+  // Identify if there is an accepted answer and separate it from other answers
+  const acceptedAnswer = answers.find(
+    (answer) => answer._id === question.accepted_answer
+  );
+  const otherAnswers = answers.filter(
+    (answer) => answer._id !== question.accepted_answer
+  );
+
+  const questionAskerId = question.asked_by._id.toString();
+
+  const handleAcceptAnswer = async (answerId) => {
+    await acceptAnswer(question._id, answerId);
+    // Handle any UI updates
+  };
+
+  const handleQuestionVote = async (event, voteType) => {
+    event.stopPropagation();
+    if (voteType === "upvote") {
+      await upvoteQuestion(question._id);
+    } else {
+      await downvoteQuestion(question._id);
+    }
+    // refresh the question or optimistically update the UI
+  };
+
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(
+    (acceptedAnswer ? otherAnswers.length : answers.length) / answersPerPage
+  );
+
+  // Change page handler
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  // Calculate paginated answers
+  const startIndex = acceptedAnswer
+    ? (currentPage - 1) * answersPerPage
+    : currentPage * answersPerPage - answersPerPage;
+  const paginatedAnswers = acceptedAnswer
+    ? [
+        acceptedAnswer,
+        ...otherAnswers.slice(startIndex, startIndex + answersPerPage - 1),
+      ]
+    : answers.slice(startIndex, startIndex + answersPerPage);
 
   const handleAnswerVote = async (event, answerId, voteType) => {
-    event.stopPropagation(); // Prevent the click event from bubbling up.
+    event.stopPropagation();
     if (voteType === "upvote") {
       await upvoteAnswer(answerId);
     } else {
       await downvoteAnswer(answerId);
     }
-    // Optionally refresh the answers list or optimistically update the UI.
+    //  refresh the answers list or optimistically
+  };
+
+  const handleCommentVote = async (event, commentId, voteType) => {
+    event.stopPropagation();
+    if (voteType === "upvote") {
+      await upvoteComment(commentId);
+    } else {
+      await downvoteComment(commentId);
+    }
+    // refresh the comments list or optimistically update the UI
+  };
+
+  const handleAddComment = async (e, parentId, parentType, questionId) => {
+    e.preventDefault();
+    if (commentText[parentId]?.trim() === "") return;
+    const userId = currentUser.user.id; // Assuming currentUser is the authenticated user
+    await addComment(parentId, { text: commentText[parentId], parentType, userId, questionId });
+    setCommentText(prevCommentText => ({ ...prevCommentText, [parentId]: "" }));
   };
 
   /**
@@ -75,22 +148,21 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   return (
     <div className="answer-page">
       {/* Question section with score visible to all users */}
-      <div className="question-score-section">
-        <span className="question-score">Score: {question.score}</span>
-        {/* Question voting section shown only to logged-in users */}
+      <div className="question-score-section question">
         {currentUser && (
-          <div className="question-vote-buttons">
+          <div className="vote-section">
             <button
               onClick={(event) =>
-                handleAnswerVote(event, question._id, "upvote")
+                handleQuestionVote(event, "upvote")
               }
             >
               Upvote
             </button>
+            <span className="question-score">Score: {question.score}</span>
             <button
               onClick={(event) =>
-                handleAnswerVote(event, question._id, "downvote")
-              }
+                handleQuestionVote(event, "downvote")
+            }
             >
               Downvote
             </button>
@@ -108,7 +180,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
         )}
       </div>
 
-      <div id="questionBody" className="row">
+      <div id="questionBody" className="row question">
         <span>{question.views} views</span>
         <p>{renderWithLinks(question.text)}</p>
         <small>
@@ -120,49 +192,183 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
         </small>
       </div>
 
+      <div className="question-comments">
+        {question.comments.map((comment) => {
+          console.log('Comment:', comment);
+          return (
+            <div key={comment._id} className="comment">
+              <p>{comment.text}</p>
+              <small>
+                Commented by {comment.commented_by.username}{" "}
+                {timeSince(new Date(comment.createdAt), "comment").time}
+                {timeSince(new Date(comment.createdAt), "comment").addAgo
+                  ? " ago"
+                  : ""}
+              </small>
+              {currentUser && (
+                <div className="comment-vote-section">
+                  <button
+                    onClick={(event) =>
+                      handleCommentVote(event, comment._id, "upvote")
+                    }
+                  >
+                    Upvote
+                  </button>
+                  <span className="comment-score">Score: {comment.votes}</span>
+                  <button
+                    onClick={(event) =>
+                      handleCommentVote(event, comment._id, "downvote")
+                    }
+                  >
+                    Downvote
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {currentUser && (
+          <form onSubmit={(e) => handleAddComment(e, question._id, 'Question')}>
+            <input
+              type="text"
+              value={commentText[question._id] || ""}
+              onChange={(e) => setCommentText(prevCommentText => ({ ...prevCommentText, [question._id]: e.target.value }))}
+              placeholder="Add a comment"
+            />
+            <button type="submit">Submit</button>
+          </form>
+        )}
+      </div>
+
       <div className="tags-row">
         <hr style={{ borderStyle: "dotted" }} />
-        {question.tags.map((tag) => (
-          <Tag key={tag._id} tag={tag} onClick={handleClickTag} />
-        ))}
+        {question.tags.map((tag) => {
+          console.log('Tag:', tag);
+          return (
+            <Tag key={tag._id} tag={tag} onClick={handleClickTag} />
+          );
+        })}
         <hr style={{ borderStyle: "dotted" }} />
       </div>
 
       <div className="answers">
-        {answers.map((answer) => (
-          <div key={answer._id} className="answer">
-            {/* Answer score visible to all users */}
-            <span className="answer-score">Score: {answer.score}</span>
-            {/* Answer voting buttons shown only to logged-in users */}
-            {currentUser && (
-              <div className="answer-vote-buttons">
-                <button
-                  onClick={(event) =>
-                    handleAnswerVote(event, answer._id, "upvote")
-                  }
-                >
-                  Upvote
+        {paginatedAnswers.map((answer) => {
+          console.log('Paginated answer:', answer);
+          return (
+            <div key={answer._id} className="answer">
+              {/* Answer score visible to all users */}
+              {currentUser && (
+                <div className="vote-section">
+                  <button
+                    onClick={(event) =>
+                      handleAnswerVote(event, answer._id, "upvote")
+                    }
+                  >
+                    Upvote
+                  </button>
+                  <span className="answer-score">Score: {answer.score}</span>
+                  <button
+                    onClick={(event) =>
+                      handleAnswerVote(event, answer._id, "downvote")
+                    }
+                  >
+                    Downvote
+                  </button>
+                </div>
+              )}
+              <p className="answerText">{renderWithLinks(answer.text)}</p>
+              <small className="answerAuthor">
+                {answer.ans_by.username}{" "}
+                {timeSince(new Date(answer.createdAt), "answer").time}
+                {timeSince(new Date(answer.createdAt), "answer").addAgo
+                  ? " ago"
+                  : ""}
+              </small>
+              {/* Button to mark an answer as accepted, visible only to the question asker */}
+              {currentUser && currentUser.user.id === questionAskerId && (
+                <button onClick={() => handleAcceptAnswer(answer._id)}>
+                  Accept Answer
                 </button>
-                <button
-                  onClick={(event) =>
-                    handleAnswerVote(event, answer._id, "downvote")
-                  }
-                >
-                  Downvote
-                </button>
+              )}
+              {/* Indicator for the accepted answer */}
+              {question.accepted_answer &&
+                question.accepted_answer._id === answer._id.toString() && (
+                  <div className="accepted-answer-indicator">
+                    <strong>Accepted Answer</strong>
+                  </div>
+                )}
+              <div className="answer-comments">
+                {answer.comments.map((comment) => {
+                  console.log('Comment:', comment);
+                  console.log('Commented by:', comment.commented_by);
+                  console.log('Created at:', comment.createdAt);
+                  return (
+                    <div key={comment._id} className="comment">
+                      <p>{comment.text}</p>
+                      <small>
+                        Commented by {comment.commented_by ? comment.commented_by.username : "Unknown User"}{" "}
+                        {timeSince(new Date(comment.createdAt), "comment").time}
+                        {timeSince(new Date(comment.createdAt), "comment").addAgo
+                          ? " ago"
+                          : ""}
+                      </small>
+                      {currentUser && (
+                        <div className="comment-vote-section">
+                          <button
+                            onClick={(event) =>
+                              handleCommentVote(event, comment._id, "upvote")
+                            }
+                          >
+                            Upvote
+                          </button>
+                          <span className="comment-score">Score: {comment.votes}</span>
+                          <button
+                            onClick={(event) =>
+                              handleCommentVote(event, comment._id, "downvote")
+                            }
+                          >
+                            Downvote
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                {currentUser && (
+                  <form onSubmit={(e) => handleAddComment(e, answer._id, 'Answer', question._id)}>
+                    <input
+                      type="text"
+                      value={commentText[answer._id] || ""}
+                      onChange={(e) => setCommentText(prevCommentText => ({ ...prevCommentText, [answer._id]: e.target.value }))}
+                      placeholder="Add a comment"
+                    />
+                    <button type="submit">Submit</button>
+                  </form>
+                )}
               </div>
-            )}
-            <p className="answerText">{renderWithLinks(answer.text)}</p>
-            <small className="answerAuthor">
-              {answer.ans_by.username}{" "}
-              {timeSince(new Date(answer.createdAt), "answer").time}
-              {timeSince(new Date(answer.createdAt), "answer").addAgo
-                ? " ago"
-                : ""}
-            </small>
-            <hr style={{ borderStyle: "dotted" }} />
-          </div>
-        ))}
+              <hr style={{ borderStyle: "dotted" }} />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="pagination-controls">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
 
       {currentUser && (

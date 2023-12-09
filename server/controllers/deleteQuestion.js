@@ -1,7 +1,4 @@
 const Question = require("../models/questions");
-// const Answer = require("../models/answers");
-// const Tag = require("../models/tags");
-
 exports.deleteQuestion = async (req, res) => {
     try {
         const questionId = req.params.id; // Assuming the question ID is sent as a parameter
@@ -16,4 +13,5 @@ exports.deleteQuestion = async (req, res) => {
     } catch (error) {
         res.status(500).send(error);
     }
+
 };

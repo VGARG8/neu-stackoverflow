@@ -53,6 +53,7 @@ exports.loginUser = async (req, res) => {
             username: user.username,
             email:user.email,
             reputation: user.reputation // Include reputation in the response
+
           },
           msg: "Login successful",
         });
