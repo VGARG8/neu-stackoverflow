@@ -51,7 +51,9 @@ exports.loginUser = async (req, res) => {
           user: {
             id: user.id,
             username: user.username,
-            reputation: user.reputation 
+            email:user.email,
+            reputation: user.reputation // Include reputation in the response
+
           },
           msg: "Login successful",
         });

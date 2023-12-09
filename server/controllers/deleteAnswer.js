@@ -1,21 +1,36 @@
 const Answer = require("../models/answers");
 
+const Question = require("../models/questions");
+
 exports.deleteAnswer = async (req, res) => {
-  try {
-    const answerId = req.params.id;
-    const answer = await Answer.findById(answerId);
-    if (!answer) {
-      return res.status(404).send("Answer not found");
+    try {
+        const answerId = req.params.id; // Extract answerId from request parameters
+
+        // Check if the answerId is valid
+        if (!answerId) {
+            return res.status(400).json({ message: 'Answer ID is missing' });
+        }
+
+        // Check if the answer with the given ID exists
+        const answer = await Answer.findById(answerId);
+        if (!answer) {
+            return res.status(404).json({ message: 'Answer not found' });
+        }
+
+        // Find the corresponding question that contains this answer
+        const question = await Question.findOneAndUpdate(
+            { answers: answerId }, // Find question that contains the answer
+            { $pull: { answers: answerId } }, // Remove the answer from the question's answers array
+            { new: true } // Return the updated question
+        );
+
+        // Delete the answer
+        await Answer.findByIdAndDelete(answerId);
+
+        res.status(200).json({ message: 'Answer deleted successfully', question });
+    } catch (error) {
+        console.error("Error deleting answer:", error);
+        res.status(500).send(error);
     }
 
-    if (answer.ans_by.toString() !== req.user._id.toString()) {
-      return res.status(403).send("Unauthorized");
-    }
-
-    await answer.remove();
-    res.status(200).send("Answer deleted successfully");
-  } catch (error) {
-    console.error("Error deleting answer:", error);
-    res.status(500).send(error);
-  }
 };
