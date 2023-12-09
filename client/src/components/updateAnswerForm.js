@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { useAuth } from "./authContext"; // Ensure correct path
+//import { useAuth } from "./authContext"; // Ensure correct path
 
-const UpdateAnswerForm = ({ onSubmit, setActivePage }) =>{
+const UpdateAnswerForm = ({  answer,setActivePage, updateAnswerTextById }) =>{
     const [text, setText] = useState(""); // Answer text state
     const [textError, setTextError] = useState(""); // Error message for the answer text
 
-    const { currentUser } = useAuth(); // Get the current user
+    // const { currentUser } = useAuth(); // Get the current user
 
     // Extract the selected answer details from location state
-    const { answer } = location.state || {};
+
 
     // Set the initial text value from the selected answer, if available
     useState(() => {
@@ -51,8 +51,12 @@ const UpdateAnswerForm = ({ onSubmit, setActivePage }) =>{
             setTextError("");
         }
 
-        // Submit the updated answer
-        onSubmit(answer._id, { text, ans_by: currentUser.user.id });
+        // Submit the updated answer text
+        updateAnswerTextById(answer._id, text); // Pass answer ID and updated text
+
+        // Reset the text state after submission if needed
+        setText("");
+
         setActivePage("userAnswers");
     };
 
@@ -72,8 +76,10 @@ const UpdateAnswerForm = ({ onSubmit, setActivePage }) =>{
 }
 
 UpdateAnswerForm.propTypes = {
-    onSubmit: PropTypes.func.isRequired,
+
     setActivePage: PropTypes.func.isRequired,
+    answer: PropTypes.object.isRequired,
+    updateAnswerTextById:PropTypes.func.isRequired
 
 };
 

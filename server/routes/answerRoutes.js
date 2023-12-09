@@ -17,7 +17,7 @@ const {
   postUpvoteComment,
   postDownvoteComment,
 } = require("../controllers/commentVote"); // New controller
-
+const {updateAnswerTextById} = require("../controllers/updateAnswerTextById");
 // routing
 const UPVOTE_ANSWER_ROUTE = "/:id/upvote";
 const DOWNVOTE_ANSWER_ROUTE = "/:id/downvote";
@@ -26,7 +26,9 @@ const COMMENT_ROUTE = "/:id/comments";
 const UPVOTE_COMMENT_ROUTE = "/:id/comments/:commentId/upvote";
 const DOWNVOTE_COMMENT_ROUTE = "/:id/comments/:commentId/downvote";
 const DELETE_ANSWER_ROUTE ='/:id';
+const UPDATE_ANSWER =  '/:answerId';
 router.delete(DELETE_ANSWER_ROUTE, deleteAnswer);
+router.patch(UPDATE_ANSWER, updateAnswerTextById);
 
 // Get all answers
 router.get("/", getAnswers);

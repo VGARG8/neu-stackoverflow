@@ -23,7 +23,9 @@ function FakeStackOverflow() {
     addAnswer,
     incrementQuestionViews,
       deleteQuestionById,
-      deleteAnswerById
+      deleteAnswerById,
+      updateAnswerTextById,
+      updateQuestionTextById
   } = useData();
 
   const [selectedQuestion, setSelectedQuestion] = useState(null);
@@ -200,6 +202,8 @@ function FakeStackOverflow() {
                     answers ={answers}
                     deleteQuestionById = {deleteQuestionById}
                     deleteAnswerById = {deleteAnswerById}
+                    updateAnswerTextById ={updateAnswerTextById}
+                    updateQuestionTextById = {updateQuestionTextById}
                     onQuestionClick={(question) => {
                       setSelectedQuestion(question);
                       setActivePage("detailedQuestion");

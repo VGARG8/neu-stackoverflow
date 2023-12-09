@@ -2,18 +2,20 @@ import { timeSince } from "../timeHelper";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "./authContext";
 import PropTypes from "prop-types";
+import UpdateQuestionForm from "./updateQuestionForm";
 
 
 
 const UserQuestionList = ({
                               questions,
-                                deleteQuestionById
+                                deleteQuestionById, updateQuestionTextById
                           }) => {
     const { currentUser } = useAuth();
     const [filteredQuestions, setFilteredQuestions] = useState([]);
     const [displayedQuestions, setDisplayedQuestions] = useState([]);
     const [sortMode, setSortMode] = useState("newest");
-
+    const [activePage, setActivePage] = useState("userQuestionList");
+    const [selectedQuestion,setSelectedQuestion] = useState(null);
     useEffect(() => {
         const filtered = questions.filter(
             (question) => question.author_email === currentUser.user.email
@@ -57,8 +59,14 @@ const UserQuestionList = ({
     };
 
 
+    function handleUpdateQuestion(question) {
+        setSelectedQuestion(question);
+        setActivePage("updateQuestionForm");
+    }
+
     return (
-        <div className="userQuestionList">
+        <div className="container">
+            { activePage==="userQuestionList" && <div className="userQuestionList">
             <div className="question-list-subheader">
                 <span>{displayedQuestions.length} questions</span>
                 <div className="question-filter-buttons">
@@ -97,10 +105,21 @@ const UserQuestionList = ({
                             <button onClick= {() => handleDeleteQuestion(question)}>
                                 Delete
                             </button>
+                            <button onClick= {() => handleUpdateQuestion(question)}>
+                                Update
+                            </button>
                         </div>
                     </div>
                 );
             })}
+        </div>}
+            {activePage ==="updateQuestionForm" && <UpdateQuestionForm
+            setActivePage={setActivePage}
+            question={selectedQuestion}
+             updateQuestionTextById={updateQuestionTextById}/>
+            }
+
+
         </div>
     );
 };
@@ -108,7 +127,8 @@ const UserQuestionList = ({
 UserQuestionList.propTypes = {
 
     questions: PropTypes.array.isRequired,
-    deleteQuestionById:PropTypes.func.isRequired
+    deleteQuestionById:PropTypes.func.isRequired,
+    updateQuestionTextById: PropTypes.func.isRequired
 
 };
 

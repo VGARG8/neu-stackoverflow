@@ -4,7 +4,9 @@ import { useAuth } from "./authContext";
 import UpdateAnswerForm from "./updateAnswerForm";
 
 
-function UserAnswers({ answers, questions, deleteAnswerById }) {
+function UserAnswers({ answers, questions, deleteAnswerById,
+        updateAnswerTextById
+        }) {
     const { currentUser } = useAuth();
     const [displayedAnswers, setDisplayedAnswers] = useState([]);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -90,9 +92,10 @@ function UserAnswers({ answers, questions, deleteAnswerById }) {
             {activePage === "updateAnswer" && (
                 <UpdateAnswerForm
                     answer={selectedAnswer}
-                    onSubmit={yourSubmitHandler} // Pass your submit handler function
+                    setDisplayedAnswers ={setDisplayedAnswers}
                     setActivePage={setActivePage}
-                 />
+                    updateAnswerTextById = {updateAnswerTextById}
+                  />
             )}
         </div>
     );
@@ -103,6 +106,7 @@ UserAnswers.propTypes = {
     answers: PropTypes.array.isRequired,
     questions: PropTypes.array.isRequired,
     deleteAnswerById: PropTypes.func.isRequired,
+    updateAnswerTextById: PropTypes.func.isRequired
 };
 
 export default UserAnswers;

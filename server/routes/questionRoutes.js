@@ -32,6 +32,10 @@ const COMMENT_ROUTE = "/:id/comments";
 const UPVOTE_COMMENT_ROUTE = "/:id/comments/:commentId/upvote";
 const DOWNVOTE_COMMENT_ROUTE = "/:id/comments/:commentId/downvote";
 const DELETE_QUESTION_ROUTE = '/:id';
+const {updateQuestionTextById} = require('../controllers/updateQuestionTextById');
+
+// PATCH route to update the question text by ID
+router.patch('/:id', updateQuestionTextById);
 
 // Delete a question by ID
 router.delete(DELETE_QUESTION_ROUTE, deleteQuestion);
