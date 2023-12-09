@@ -6,6 +6,7 @@ exports.postQuestion = async (req, res) => {
   try {
     // Extract the tag names and other question details from the request body
     let { tagNames, ...questionDetails } = req.body;
+    console.log("Request Body" + req.body);
 
     // Ensure asked_by is correctly cast to an ObjectId
     if (mongoose.Types.ObjectId.isValid(questionDetails.asked_by)) {
@@ -13,6 +14,7 @@ exports.postQuestion = async (req, res) => {
     } else {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
+
 
     // Convert tag names to lowercase for consistent handling
     tagNames = tagNames.map((tag) => tag.toLowerCase());

@@ -13,6 +13,7 @@ import useAuthApi from "./useAuthApi.js";
 import UserProfile from "./userProfile.js";
 import { useAuth } from "./authContext.js";
 
+
 function FakeStackOverflow() {
   const {
     data,
@@ -21,6 +22,8 @@ function FakeStackOverflow() {
     addQuestion,
     addAnswer,
     incrementQuestionViews,
+      deleteQuestionById,
+      deleteAnswerById
   } = useData();
 
   const [selectedQuestion, setSelectedQuestion] = useState(null);
@@ -78,7 +81,7 @@ function FakeStackOverflow() {
   }, [questions, selectedQuestion]);
 
   const handleSetActivePage = (page) => {
-    if (page === "questions") {
+    if (page === "questions" || page ==="userQuestionList") {
       console.log("Resetting selected tag");
       setSelectedTag(null);
       setFilteredQuestions(questions);
@@ -187,7 +190,26 @@ function FakeStackOverflow() {
                 setSelectedTag={setSelectedTag}
               />
             )}
-            {activePage === "profile" && <UserProfile />}
+            {activePage === "profile" &&
+
+                <UserProfile
+                    setSelectedTag={setSelectedTag}
+                    questions={displayedQuestions}
+                    tags={tags}
+                    setActivePage={setActivePage}
+                    answers ={answers}
+                    deleteQuestionById = {deleteQuestionById}
+                    deleteAnswerById = {deleteAnswerById}
+                    onQuestionClick={(question) => {
+                      setSelectedQuestion(question);
+                      setActivePage("detailedQuestion");
+                    }}
+                />
+
+            }
+
+
+
             {(activePage === "questions" ||
               activePage === "questionsByTag") && (
               <QuestionList

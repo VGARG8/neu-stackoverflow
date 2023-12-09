@@ -130,6 +130,7 @@ function QuestionList({
               </div>
               <div className="question-title">
                 <h3 className="postTitle">{question.title}</h3>
+                <h3 className= "authorEmail">Email: {question.asked_by.author_email}</h3>
               </div>
               <div className="question-post-details lastActivity">
                 <span>

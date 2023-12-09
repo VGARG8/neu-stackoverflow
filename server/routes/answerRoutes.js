@@ -6,14 +6,15 @@ const router = express.Router();
 const { postAnswer } = require("../controllers/postAnswer");
 const { getAnswers } = require("../controllers/getAnswers");
 const { postUpvoteAnswer, postDownvoteAnswer } = require('../controllers/answerVote');
-
+const { deleteAnswer } = require('../controllers/deleteAnswer');
 // routing
 const UPVOTE_ANSWER_ROUTE = '/:id/upvote';
 const DOWNVOTE_ANSWER_ROUTE = '/:id/downvote';
+const DELETE_ANSWER_ROUTE ='/:id';
 
 
 
-
+router.delete(DELETE_ANSWER_ROUTE, deleteAnswer);
 
 // Get all answers
 router.get('/', getAnswers);

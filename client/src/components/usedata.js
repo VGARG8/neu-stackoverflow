@@ -18,6 +18,7 @@ const useData = () => {
       setData((prevData) => ({ ...prevData, questions: response.data }));
     } catch (err) {
       console.error("Error fetching questions:", err);
+
       setError(err);
     } finally {
       setLoading(false);
@@ -175,6 +176,74 @@ const downvoteAnswer = async (answerId) => {
     console.error("Error downvoting answer:", err);
   }
 };
+  const deleteQuestionById = async (question) => {
+    try {
+      const answerIdsToDelete = question.answers.map((ans) => ans._id);
+      const deletePromises = answerIdsToDelete.map((answerId) =>
+          axios.delete(`${SERVER_URL}/answers/${answerId}`)
+      );
+
+      // Batch delete all answers
+      await Promise.all(deletePromises);
+
+      // Once all answers are deleted, delete the question
+      const response = await axios.delete(`${SERVER_URL}/questions/${question._id}`);
+      if (response.status === 200) {
+        fetchQuestions();
+        fetchAnswers(); // Assuming you need to update answers after deletion
+      } else {
+        console.log(response.data); // Log response data for debugging
+      }
+    } catch (error) {
+      console.error('Error deleting question:', error);
+      // Handle error states if needed
+    }
+  };
+
+  // Inside the useData hook
+  const deleteAnswerById = async (questionId, answerId) => {
+    try {
+      const response = await axios.delete(`${SERVER_URL}/answers/${answerId}`);
+      if (response.status === 200) {
+        console.log("Deleted Answer " + answerId);
+
+        // Update the state without fetching answers again
+        setData((prevData) => {
+          const updatedData = { ...prevData };
+
+          // Remove the answer from the answers array
+          const updatedAnswers = (updatedData.answers || []).filter(
+              (answer) => answer._id !== answerId
+          );
+          updatedData.answers = updatedAnswers;
+
+          // Update the corresponding question's answers array
+          if (updatedData.questions) {
+            const updatedQuestions = updatedData.questions.map((question) => {
+              if (question._id === questionId) {
+                const updatedQuestion = { ...question };
+                updatedQuestion.answers = updatedQuestion.answers.filter(
+                    (ans) => ans._id !== answerId
+                );
+                return updatedQuestion;
+              }
+              return question;
+            });
+            updatedData.questions = updatedQuestions;
+          }
+
+          return updatedData;
+        });
+      } else {
+        console.log(response.data); // Log response data for debugging
+      }
+    } catch (error) {
+      console.error("Error deleting answer:", error);
+      // Handle error states if needed
+    }
+  };
+
+
 
 
 
@@ -197,7 +266,11 @@ const downvoteAnswer = async (answerId) => {
     upvoteQuestion, 
     downvoteQuestion,
     upvoteAnswer,
-    downvoteAnswer
+    downvoteAnswer,
+    deleteQuestionById,
+    deleteAnswerById
+
+
   };
 };
 

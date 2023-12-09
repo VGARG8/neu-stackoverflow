@@ -2,35 +2,19 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-
-// import routes
-const answerRoutes = require("./routes/answerRoutes");
-const questionRoutes = require("./routes/questionRoutes");
-const tagsRoutes = require("./routes/tagsRoutes");
-const userRoutes = require("./routes/userRoutes")
-
-
-// harcode route 
-const ANSWER_ROUTE = '/answers'
-const QUESTION_ROUTE = '/questions'
-const TAGS_ROUTE = '/tags'
-const USER_ROUTE = '/users'
-
-const PORT = 8000;
-
-
 const app = express();
 
-//app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With",
+};
 
-
-app.use(cors({
-  origin: 'http://localhost:3000', // Your client's URL
-  credentials: true
-}));
-
-
-app.use(express.json()); // for parsing application/json
+app.use(cors(corsOptions));
+app.use(express.json());
 
 // MongoDB connection
 mongoose.connect("mongodb://127.0.0.1:27017/fake_so", {
@@ -40,14 +24,33 @@ mongoose.connect("mongodb://127.0.0.1:27017/fake_so", {
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
+// Import routes
+const answerRoutes = require("./routes/answerRoutes");
+const questionRoutes = require("./routes/questionRoutes");
+const tagsRoutes = require("./routes/tagsRoutes");
+const userRoutes = require("./routes/userRoutes");
 
-app.use(ANSWER_ROUTE, answerRoutes);
-app.use(QUESTION_ROUTE, questionRoutes);
-app.use(TAGS_ROUTE, tagsRoutes);
-app.use(USER_ROUTE, userRoutes)
+// Define routes
+app.use('/answers', answerRoutes);
+app.use('/questions', questionRoutes);
+app.use('/tags', tagsRoutes);
+app.use('/users', userRoutes);
 
+// Set more explicit CORS headers for all routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', true);
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
-// Start
+// Start the server
+const PORT = 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

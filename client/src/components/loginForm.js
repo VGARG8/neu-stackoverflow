@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-function LoginForm({ onLogin }) {
+function loginForm({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,8 +31,8 @@ function LoginForm({ onLogin }) {
   );
 }
 
-LoginForm.propTypes = {
+loginForm.propTypes = {
   onLogin: PropTypes.func.isRequired,
 };
 
-export default LoginForm;
+export default loginForm;

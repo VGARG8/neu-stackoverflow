@@ -12,10 +12,16 @@ exports.getQuestions = async (req, res) => {
       .populate('tags')
       .populate({ 
         path: 'asked_by', 
-        select: 'username reputation' 
+        select: 'username reputation'
       })
-      .select('title text tags asked_by views score createdAt updatedAt'); 
-
+      .select('title text tags asked_by views score createdAt updatedAt author_email');
+    questions.forEach(question => {
+      if (question.author_email) {
+        console.log('Author email fetched successfully:', question.author_email);
+      } else {
+        console.log('Author email not fetched or does not exist.');
+      }
+    });
     res.json(questions);
   } catch (error) {
     res.status(500).send(error);
