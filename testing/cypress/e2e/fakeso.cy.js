@@ -194,37 +194,6 @@ describe('Fake SO Test Suite', () => {
 
 
 
-// check logout at the end:   
-//   it('should log out an existing user', () => {
-//     // Visit the main page
-//     cy.visit('http://localhost:3000');
-//
-//     // Click the "Login" button
-//     cy.get('button').contains('Login').click();
-//
-//     // Fill out the login form
-//     cy.get('input[type="email"]').type('testuser@example.com');
-//     cy.get('input[type="password"]').type('testpassword');
-//
-//     // Submit the form
-//     cy.get('form').submit();
-//
-//     // Check that a welcome message is displayed
-//     cy.contains('Welcome, testuser!');
-//
-//     // Click the "Logout" button
-//     cy.get('button').contains('Logout').click();
-
-    // Wait for a short period to allow the state update to complete
-  //   cy.wait(1000); // Adjust the delay as needed
-  //
-  //   // Check that the "Logout" button is no longer present
-  //   cy.get('button').contains('Logout').should('not.exist');
-  //
-  //   // Check that the "Login" button is present
-  //   cy.get('button').contains('Login').should('exist');
-  //
-  // });
 
 
 

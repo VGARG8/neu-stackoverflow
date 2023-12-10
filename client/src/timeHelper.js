@@ -32,7 +32,21 @@ export const timeSince = (date, type = "question") => {
   const secondsPast = (now.getTime() - date.getTime()) / 1000; // Calculate the time difference in seconds
 
   // Determine the action word based on the type.
-  const actionWord = type === "question" ? "asked" : "answered";
+  let actionWord;
+  switch (type) {
+    case "question":
+      actionWord = "asked";
+      break;
+    case "answer":
+      actionWord = "answered";
+      break;
+    case "comment":
+      actionWord = "commented";
+      break;
+    default:
+      console.error("Invalid type passed to timeSince:", type);
+      return { time: "Unknown time", addAgo: false };
+  }
 
   // Check elapsed time and format it.
   if (secondsPast < 60) {
