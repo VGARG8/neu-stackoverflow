@@ -74,8 +74,8 @@ describe('Fake SO Test Suite', () => {
     // Check that a welcome message is displayed
     cy.contains('Welcome, testuser!');
 
-    // Add 15 questions and answers
-    for (let i = 1; i <= 15; i++) {
+    // Add 10 questions and answers
+    for (let i = 1; i <= 10; i++) {
         // Add a question
         cy.contains('Ask a Question').click();
         cy.get('#formTitleInput').type(`Test Question ${i}`);

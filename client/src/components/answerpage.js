@@ -24,6 +24,9 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
   const commentsPerPage = 3;
   const [currentQuestionCommentPage, setCurrentQuestionCommentPage] = useState(1);
 
+  const [answerList, setAnswerList] = useState(answers);
+
+
   const handleQuestionCommentPageChange = (newPage) => {
     if (newPage >= 1 && newPage <= Math.ceil(question.comments.length / commentsPerPage)) {
       setCurrentQuestionCommentPage(newPage);
@@ -39,13 +42,15 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
 
   const questionAskerId = question.asked_by._id.toString();
 
-  const handleAcceptAnswer = async (answerId) => {
-    await acceptAnswer(question._id, answerId);
-    const acceptedIndex = answers.findIndex((answer) => answer._id === answerId);
-    const acceptedAnswer = answers[acceptedIndex];
-    answers.splice(acceptedIndex, 1);
-    answers.unshift(acceptedAnswer);
-  };
+const handleAcceptAnswer = async (answerId) => {
+  await acceptAnswer(question._id, answerId);
+  const acceptedIndex = answerList.findIndex((answer) => answer._id === answerId);
+  const acceptedAnswer = answerList[acceptedIndex];
+  let newAnswerList = [...answerList];
+  newAnswerList.splice(acceptedIndex, 1); 
+  newAnswerList = [acceptedAnswer, ...newAnswerList]; 
+  setAnswerList(newAnswerList);
+};
 
   const handleQuestionVote = async (event, voteType) => {
     event.stopPropagation();
@@ -197,13 +202,13 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
           </div>
 
           <div className="question-comments">
-            {question.comments.slice((currentQuestionCommentPage - 1) * commentsPerPage, currentQuestionCommentPage * commentsPerPage).map((comment) => {
+            {question.comments.slice((currentQuestionCommentPage - 1) * commentsPerPage, currentQuestionCommentPage * commentsPerPage).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((comment) => {
               console.log('Comment:', comment);
               return (
                 <div key={comment._id} className="comment">
                   <p>{comment.text}</p>
                   <small>
-                    Commented by {comment.commented_by.username}{" "}
+                    {comment.commented_by.username}{" "}
                     {timeSince(new Date(comment.createdAt), "comment").time}
                     {timeSince(new Date(comment.createdAt), "comment").addAgo
                       ? " ago"
@@ -288,7 +293,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
                       </div>
                     )}
                   <div className="answer-comments">
-                    {answer.comments.map((comment) => {
+                    {answer.comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((comment) => {
                       console.log('Comment:', comment);
                       console.log('Commented by:', comment.commented_by);
                       console.log('Created at:', comment.createdAt);
@@ -366,5 +371,3 @@ AnswerPage.propTypes = {
 };
 
 export default AnswerPage;
-
-
