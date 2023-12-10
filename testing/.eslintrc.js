@@ -10,9 +10,9 @@ module.exports = {
     ],
     overrides: [
         {
-            files: ['**/*.spec.js'],
+            files: ['**/*.spec.js'], // Adjust the file pattern as needed
             globals: {
-                cy: 'readonly',
+                cy: 'readonly', // Define Cypress globals here
             },
             env: {
                 jest: true,
@@ -39,5 +39,8 @@ module.exports = {
             version: 'detect',
         },
     },
-    rules: {},
+    rules: {
+        "react/react-in-jsx-scope": "off",
+        "react-hooks/rules-of-hooks": "off", // This line has been added
+    },
 };

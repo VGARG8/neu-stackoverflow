@@ -225,6 +225,21 @@ describe('Fake SO Test Suite', () => {
 
   });
 
+
+
+  //User profile tests
+    it('should display the Profile button on the homepage when logged in', () => {
+        cy.get('button').contains('Profile').should('exist');
+    });
+
+    it('should navigate to the user profile page when Profile button is clicked', () => {
+        cy.get('button').contains('Profile').click();
+        // cy.url().should('include', '/user-profile'); // Adjust the URL if it differs
+        cy.get('.user-profile').should('exist');
+        cy.contains('User Profile').should('exist');
+
+    });
 });
+
 
 
