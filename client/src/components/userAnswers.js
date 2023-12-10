@@ -12,19 +12,15 @@ function UserAnswers({ answers, questions, deleteAnswerById,
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [activePage, setActivePage] = useState('userAnswers');
 
-    const sortByNewest = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
-
-    const filteredAnswers = useMemo(
-        () =>
-            answers
-                .filter((answer) => answer.ans_by._id === currentUser.user.id)
-                .sort(sortByNewest),
-        [answers, currentUser.user.id]
-    );
-
     useEffect(() => {
+        const sortByNewest = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
+
+        const filteredAnswers = answers
+            .filter((answer) => answer.ans_by._id === currentUser.user.id)
+            .sort(sortByNewest);
+
         setDisplayedAnswers(filteredAnswers);
-    }, [filteredAnswers]);
+    }, [answers, currentUser.user.id]);
 
     const handleDelete = async (_id) => {
         const q_id = findQuestionIdByAnswerId(questions, _id);

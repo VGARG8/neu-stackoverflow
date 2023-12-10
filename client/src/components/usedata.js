@@ -73,7 +73,17 @@ const useData = () => {
       await axios.post(`${SERVER_URL}/questions`, question, {
         withCredentials: true,
       });
-      fetchQuestions(); // Refresh the questions list
+      setData((prevData) => {
+        if (prevData && prevData.questions) {
+          return {
+            ...prevData,
+            questions: [...prevData.questions, question], // Assuming the new question object structure matches the existing ones
+          };
+        }
+        // If data or questions array doesn't exist, return the previous state
+        return prevData;
+      });
+
     } catch (err) {
       console.error("Error adding a new question:", err);
     }
@@ -268,7 +278,7 @@ const downvoteComment = async (commentId) => {
 };
   const deleteQuestionById = async (question) => {
     try {
-      const answerIdsToDelete = question.answers.map((ans) => ans._id);
+      const answerIdsToDelete = (question.answers || []).map((ans) => ans._id);
       const deletePromises = answerIdsToDelete.map((answerId) =>
           axios.delete(`${SERVER_URL}/answers/${answerId}`)
       );
@@ -279,8 +289,16 @@ const downvoteComment = async (commentId) => {
       // Once all answers are deleted, delete the question
       const response = await axios.delete(`${SERVER_URL}/questions/${question._id}`);
       if (response.status === 200) {
-        fetchQuestions();
-        fetchAnswers(); // Assuming you need to update answers after deletion
+        // Update the state directly
+        setData((prevData) => {
+          // Filter out the deleted question from questions array
+          const updatedQuestions = prevData.questions.filter(q => q._id !== question._id);
+
+          // Filter out the deleted answers from answers array
+          const updatedAnswers = prevData.answers.filter(ans => !answerIdsToDelete.includes(ans._id));
+
+          return { ...prevData, questions: updatedQuestions, answers: updatedAnswers };
+        });
       } else {
         console.log(response.data); // Log response data for debugging
       }
@@ -289,6 +307,8 @@ const downvoteComment = async (commentId) => {
       // Handle error states if needed
     }
   };
+
+
 
   // Inside the useData hook
   const deleteAnswerById = async (questionId, answerId) => {

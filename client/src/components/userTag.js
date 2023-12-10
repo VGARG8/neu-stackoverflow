@@ -1,24 +1,29 @@
+import {useEffect, useState} from "react";
+import {useAuth} from "./authContext";
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
-import { useAuth } from "./authContext";
 
 const UserTag = ({ tags, questions }) => {
     const { currentUser } = useAuth();
     const [filteredTags, setFilteredTags] = useState([]);
-   // console.log(tags); getting
+
     useEffect(() => {
         const filteredQuestions = questions.filter((question) => {
             return question.author_email === currentUser.user.email;
         });
-        console.log(filteredQuestions);
-        const userTags = tags.filter((tag) => {
-            return filteredQuestions.some((question) => {
-                return question.tags.some((qTag) => qTag._id === tag._id);
+
+        const userTagIds = filteredQuestions.reduce((acc, question) => {
+            question.tags.forEach((tag) => {
+                if (!acc.includes(tag._id)) {
+                    acc.push(tag._id);
+                }
             });
-        });
-        console.log(userTags);
+            return acc;
+        }, []);
+
+        const userTags = tags.filter((tag) => userTagIds.includes(tag._id));
+
         setFilteredTags(userTags);
-    }, [questions, tags,filteredTags]);
+    }, [questions, tags, currentUser]);
 
     return (
         <div className="tags-grid">
