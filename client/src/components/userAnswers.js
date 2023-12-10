@@ -1,16 +1,20 @@
-import PropTypes from "prop-types";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "./authContext";
 import UpdateAnswerForm from "./updateAnswerForm";
+import PropTypes from "prop-types";
 
-
-function UserAnswers({ answers, questions, deleteAnswerById,
-        updateAnswerTextById
-        }) {
+function UserAnswers({
+                         answers,
+                         questions,
+                         deleteAnswerById,
+                         updateAnswerTextById,
+                     }) {
     const { currentUser } = useAuth();
     const [displayedAnswers, setDisplayedAnswers] = useState([]);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
-    const [activePage, setActivePage] = useState('userAnswers');
+    const [activePage, setActivePage] = useState("userAnswers");
+    const [currentPage, setCurrentPage] = useState(1);
+    const answersPerPage = 5;
 
     useEffect(() => {
         const sortByNewest = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
@@ -24,53 +28,63 @@ function UserAnswers({ answers, questions, deleteAnswerById,
 
     const handleDelete = async (_id) => {
         const q_id = findQuestionIdByAnswerId(questions, _id);
-        console.log(_id, q_id);
-        // if (q_id) {
         try {
-            await deleteAnswerById(q_id, _id); // Call deleteQuestionById with the questionId
+            await deleteAnswerById(q_id, _id);
         } catch (error) {
-            console.error('Error handling delete question:', error);
+            console.error("Error handling delete question:", error);
             // Handle error states if needed
         }
-        // }
     };
 
     const handleUpdate = (_id) => {
-        // Find the selected answer using its ID
         const selectedAnswer = answers.find((answer) => answer._id === _id);
-
-        // Check if the answer is found
         if (selectedAnswer) {
-            // Set the selected answer and switch to update page
             setSelectedAnswer(selectedAnswer);
-            setActivePage('updateAnswer');
+            setActivePage("updateAnswer");
         } else {
-            // Handle case when the answer is not found
             console.error("Selected answer not found");
         }
     };
 
     const findQuestionIdByAnswerId = (questionsArray, answerId) => {
         for (const question of questionsArray) {
-            //   console.log(question);
             if (
                 question.answers &&
                 question.answers.some((answer) => answer._id === answerId)
             ) {
-                //   console.log("Found "+ question);
                 return question._id;
             }
         }
-        return null; // If no question found containing the specified answer ID
+        return null;
+    };
+
+    const indexOfLastAnswer = currentPage * answersPerPage;
+    const indexOfFirstAnswer = indexOfLastAnswer - answersPerPage;
+    const currentAnswers = displayedAnswers.slice(
+        indexOfFirstAnswer,
+        indexOfLastAnswer
+    );
+
+    const totalPages = Math.ceil(displayedAnswers.length / answersPerPage);
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage((prevPage) => prevPage + 1);
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prevPage) => prevPage - 1);
+        }
     };
 
     return (
         <div className="container">
             {activePage === "userAnswers" && (
                 <div className="useAnswerList">
-                    {displayedAnswers.map((answer) => (
+                    {currentAnswers.map((answer) => (
                         <div key={answer._id} className="answerBlock">
-                            {/* Render each answer or its properties here */}
                             <a href={`#${answer._id}`} className="answerLink">
                                 {answer.text.length > 50
                                     ? `${answer.text.substring(0, 50)}...`
@@ -82,27 +96,32 @@ function UserAnswers({ answers, questions, deleteAnswerById,
                             </div>
                         </div>
                     ))}
+                    {/* Pagination controls */}
+                    <div className="pagination">
+                        <button onClick={handlePrevPage}>Previous</button>
+                        <span>{`Page ${currentPage} of ${totalPages}`}</span>
+                        <button onClick={handleNextPage}>Next</button>
+                    </div>
                 </div>
             )}
 
             {activePage === "updateAnswer" && (
                 <UpdateAnswerForm
                     answer={selectedAnswer}
-                    setDisplayedAnswers ={setDisplayedAnswers}
+                    setDisplayedAnswers={setDisplayedAnswers}
                     setActivePage={setActivePage}
-                    updateAnswerTextById = {updateAnswerTextById}
-                  />
+                    updateAnswerTextById={updateAnswerTextById}
+                />
             )}
         </div>
     );
-
 }
 
 UserAnswers.propTypes = {
     answers: PropTypes.array.isRequired,
     questions: PropTypes.array.isRequired,
     deleteAnswerById: PropTypes.func.isRequired,
-    updateAnswerTextById: PropTypes.func.isRequired
+    updateAnswerTextById: PropTypes.func.isRequired,
 };
 
 export default UserAnswers;

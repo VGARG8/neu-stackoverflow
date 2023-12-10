@@ -79,7 +79,7 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
       return;
     }
 
-    console.log("Email "+ currentUser.user.email);
+    console.log("Email "+ currentUser.user._id);
 
     onSubmit({
       title,

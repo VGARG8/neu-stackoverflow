@@ -73,16 +73,9 @@ const useData = () => {
       await axios.post(`${SERVER_URL}/questions`, question, {
         withCredentials: true,
       });
-      setData((prevData) => {
-        if (prevData && prevData.questions) {
-          return {
-            ...prevData,
-            questions: [...prevData.questions, question], // Assuming the new question object structure matches the existing ones
-          };
-        }
-        // If data or questions array doesn't exist, return the previous state
-        return prevData;
-      });
+
+      fetchQuestions();
+      fetchTags();
 
     } catch (err) {
       console.error("Error adding a new question:", err);
@@ -430,6 +423,63 @@ const downvoteComment = async (id) => {
       throw error;
     }
   };
+  const deleteTagForUser = async (tagId, userId) => {
+    try {
+      console.log("Payload  ",tagId,userId);
+      const response = await axios.delete(`${SERVER_URL}/tags`, {
+        data: { tagId, userId }, // Simplified object property shorthand
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        // Filter out the deleted tag from tags array
+        setData((prevData) => {
+          const updatedTags = prevData.tags.filter(tag => tag._id !== tagId);
+          return { ...prevData, tags: updatedTags };
+        });
+
+        // Update questions that had the deleted tag
+        setData((prevData) => {
+          const updatedQuestions = prevData.questions.map((question) => {
+            if (question.tags.includes(tagId)) {
+              const updatedQuestion = { ...question };
+              updatedQuestion.tags = updatedQuestion.tags.filter(tag => tag !== tagId);
+              return updatedQuestion;
+            }
+            return question;
+          });
+          return { ...prevData, questions: updatedQuestions };
+        });
+      } else {
+        console.log(response.data); // Log response data for debugging
+      }
+    } catch (error) {
+      console.error("Error deleting tag for user:", error);
+      // Handle error states if needed
+    }
+  };
+  const updateTagNameById = async (tagId, userId, newTagName) => {
+    try {
+      const response = await axios.patch(`${SERVER_URL}/tags`, {
+        tagId:tagId,
+        newTagName: newTagName,
+        userId: userId
+      }, {
+        withCredentials: true // Add this if needed for authentication
+      });
+
+      if (response.status === 200) {
+        console.log('Tag name updated successfully.');
+        // Handle success if needed
+      } else {
+        console.error('Failed to update tag name:', response.data);
+        // Handle failure or error response
+      }
+    } catch (error) {
+      console.error('Error updating tag name:', error);
+      // Handle error states if needed
+    }
+  };
+
 
 
   // Fetch data
@@ -459,7 +509,9 @@ const downvoteComment = async (id) => {
     deleteQuestionById,
     deleteAnswerById,
     updateAnswerTextById,
-    updateQuestionTextById
+    updateQuestionTextById,
+    deleteTagForUser,
+    updateTagNameById
   };
 };
 
