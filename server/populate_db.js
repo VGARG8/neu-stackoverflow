@@ -54,11 +54,13 @@ async function createQuestions(users, tags, num) {
   for (let i = 0; i < num; i++) {
     const createdAt = randomDate(new Date(2020, 0, 1), new Date());
 
+    // Added author_email field
     questions.push(new Question({
       title: faker.lorem.sentence(),
       text: faker.lorem.paragraph(),
       tags: faker.random.arrayElements(tags, 2).map(tag => tag._id),
       asked_by: faker.random.arrayElement(users)._id,
+      author_email: faker.internet.email(), // Include author email
       views: faker.datatype.number(100),
       score: faker.datatype.number(100),
       createdAt, 
