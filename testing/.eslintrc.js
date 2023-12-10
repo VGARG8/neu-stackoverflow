@@ -10,9 +10,9 @@ module.exports = {
     ],
     overrides: [
         {
-            files: ['**/*.spec.js'], // Adjust the file pattern as needed
+            files: ['**/*.spec.js'],
             globals: {
-                cy: 'readonly', // Define Cypress globals here
+                cy: 'readonly',
             },
             env: {
                 jest: true,

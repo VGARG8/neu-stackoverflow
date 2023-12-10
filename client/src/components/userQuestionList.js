@@ -7,7 +7,7 @@ import {useAuth} from "./authContext";
 const UserQuestionList = ({
                               questions,
                               deleteQuestionById,
-                              updateQuestionTextById,
+                              updateQuestionTextById
                           }) => {
     const {currentUser} = useAuth();
     const [filteredQuestions, setFilteredQuestions] = useState([]);

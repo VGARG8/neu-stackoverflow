@@ -204,6 +204,7 @@ function FakeStackOverflow() {
                     questions={displayedQuestions}
                     tags={tags}
                     setActivePage={setActivePage}
+                    data={data}
                     answers ={answers}
                     deleteQuestionById = {deleteQuestionById}
                     deleteAnswerById = {deleteAnswerById}
