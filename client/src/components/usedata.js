@@ -109,35 +109,43 @@ const useData = () => {
   // Add a new comment
   const addComment = async (parentId, commentDetails) => {
     try {
+      const { userId, parentType, text } = commentDetails;
+
       const payload = {
-        ...commentDetails,
-        parentId,
+        text,
+        commented_by: userId,
+        parent: {
+          type: parentType,
+          id: parentId
+        }
       };
 
       console.log('Payload:', payload); // Log the payload
 
-      const endpoint = commentDetails.parentType === 'Question' 
-        ? `${SERVER_URL}/questions/${parentId}/comments` 
-        : `${SERVER_URL}/answers/${parentId}/comments`;
+      const endpoint = `${SERVER_URL}/comments`;
 
       await axios.post(endpoint, payload, {
         withCredentials: true,
       });
 
-      // Fetch the updated question only if parentType is 'Answer'
-      let updatedQuestion;
-      if (commentDetails.parentType === 'Answer') {
-        updatedQuestion = await fetchQuestionById(commentDetails.questionId);
-      } else {
-        updatedQuestion = await fetchQuestionById(parentId);
-      }
+      // Fetch the updated question
+      const updatedQuestion = await fetchQuestionById(parentId);
 
       // Update the questions array with the updated question
       setData((prevData) => {
         const updatedQuestions = prevData.questions.map((question) =>
           question._id === parentId ? updatedQuestion : question
         );
-        return { ...prevData, questions: updatedQuestions };
+
+        // If the comment is for an answer, update the answers array as well
+        let updatedAnswers = prevData.answers;
+        if (parentType === 'answer') {
+          updatedAnswers = prevData.answers.map((answer) =>
+            answer._id === parentId ? updatedQuestion.answers.find(a => a._id === parentId) : answer
+          );
+        }
+
+        return { ...prevData, questions: updatedQuestions, answers: updatedAnswers };
       });
     } catch (err) {
       console.error("Error adding a new comment:", err);

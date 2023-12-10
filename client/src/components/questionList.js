@@ -64,6 +64,12 @@ function QuestionList({
 
     if (!isMounted) return;
 
+    // Check if the user's reputation is 50 or higher
+    if (currentUser.user.reputation < 50) {
+      alert("Your reputation must be 50 or higher to vote.");
+      return;
+    }
+
     if (voteType === "upvote") {
       await upvoteQuestion(questionId);
     } else {
@@ -94,7 +100,7 @@ function QuestionList({
 
   // Sorting functions
   const sortByNewest = (a, b) =>
-    new Date(b.createdAt) - new Date(a.createdAt);
+    new Date(b.updatedAt) - new Date(a.updatedAt);
   const sortByActive = (a, b) => b.views - a.views;
 
   useEffect(() => {

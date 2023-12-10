@@ -21,7 +21,8 @@ function Header({
   onProfileClick
 }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const auth = useAuth(); // Store the context in a variable
+  const [logoutMessage, setLogoutMessage] = useState(""); // New state for logout message
+  const auth = useAuth();
 
   // Early return in case the context is not available
   if (!auth) {
@@ -34,6 +35,12 @@ function Header({
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
   };
+
+   const handleLogout = () => {
+    logout();
+    setLogoutMessage("You have been logged out."); 
+  };
+
 
   /**
    * Handles the search functionality when user presses 'Enter'.
@@ -123,7 +130,8 @@ function Header({
           </span>
           <button onClick={onProfileClick}>Profile</button>
 
-          <button onClick={logout}>Logout</button>
+          <button onClick={handleLogout}>Logout</button>
+           {logoutMessage && <p className="logout-message">{logoutMessage}</p>}
         </>
       ) : (
         <>
@@ -146,3 +154,5 @@ Header.propTypes = {
 };
 
 export default Header;
+
+

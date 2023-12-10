@@ -10,7 +10,7 @@ const { postComment } = require("../controllers/postComment");
 
 const UPVOTE_COMMENT_ROUTE = "/:id/upvote";
 const DOWNVOTE_COMMENT_ROUTE = "/:id/downvote";
-const COMMENT_ROUTE = "/:id"; 
+const COMMENT_ROUTE = "/"; 
 
 // route to upvote comment
 router.post(UPVOTE_COMMENT_ROUTE, authenticateJWT, postUpvoteComment);
