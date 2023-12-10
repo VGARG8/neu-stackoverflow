@@ -35,11 +35,12 @@ const UpdateQuestionForm = ({ question, setActivePage, updateQuestionTextById })
             return;
         }
 
-        updateQuestionTextById(question._id, text);
+         updateQuestionTextById(question._id, text);
+
 
         // Optionally reset the form field or navigate to another page
         // setText("");
-        setActivePage("questions");
+        setActivePage("userQuestionList");
     };
 
     return (
