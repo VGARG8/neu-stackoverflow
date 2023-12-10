@@ -62,6 +62,7 @@ app.use('/answers', answerRoutes);
 app.use('/questions', questionRoutes);
 app.use('/tags', tagsRoutes);
 app.use('/users', userRoutes);
+app.use('/comments', commentRoutes);
 
 // Set more explicit CORS headers for all routes
 app.use((req, res, next) => {

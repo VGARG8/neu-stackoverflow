@@ -1,4 +1,5 @@
 const Answer = require("../models/answers");
+const Question = require("../models/questions");
 
 exports.postUpvoteAnswer = async (req, res) => {
   try {
@@ -13,9 +14,16 @@ exports.postUpvoteAnswer = async (req, res) => {
 
     // Update user's reputation
     if (answer.ans_by) {
-      // Increment user's reputation
-      answer.ans_by.reputation += 1;
+      // Increment user's reputation by 5 for an upvote
+      answer.ans_by.reputation += 5;
       await answer.ans_by.save();
+    }
+
+    // Find the associated question and update its updatedAt field
+    const question = await Question.findOne({ answers: answerId });
+    if (question) {
+      question.updatedAt = new Date();
+      await question.save();
     }
 
     res.status(200).json(answer);
@@ -38,9 +46,16 @@ exports.postDownvoteAnswer = async (req, res) => {
 
     // Update user's reputation
     if (answer.ans_by) {
-      // Decrement user's reputation
-      answer.ans_by.reputation -= 1;
+      // Decrement user's reputation by 10 for a downvote
+      answer.ans_by.reputation -= 10;
       await answer.ans_by.save();
+    }
+
+    // Find the associated question and update its updatedAt field
+    const question = await Question.findOne({ answers: answerId });
+    if (question) {
+      question.updatedAt = new Date();
+      await question.save();
     }
 
     res.status(200).json(answer);
