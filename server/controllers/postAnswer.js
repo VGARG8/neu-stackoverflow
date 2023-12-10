@@ -5,9 +5,6 @@ const mongoose = require('mongoose')
 exports.postAnswer = async (req, res) => {
   try {
     const { text, ans_by, questionId } = req.body; // Extract required fields
-    console.log("The text is: ", text);
-    console.log("Answered by: ", ans_by);
-    console.log("Question ID: ", questionId);
 
     // Ensure ans_by is correctly cast to an ObjectId
     if (!mongoose.Types.ObjectId.isValid(ans_by)) {
@@ -28,6 +25,10 @@ exports.postAnswer = async (req, res) => {
     await Question.findByIdAndUpdate(questionId, {
       $push: { answers: newAnswer._id },
     });
+
+    // Update the Question document
+    const question = await Question.findById(questionId);
+    await question.save();
 
     res.status(201).json(newAnswer);
   } catch (error) {

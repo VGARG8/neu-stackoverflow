@@ -12,6 +12,8 @@ const answerRoutes = require("./routes/answerRoutes");
 const questionRoutes = require("./routes/questionRoutes");
 const tagsRoutes = require("./routes/tagsRoutes");
 const userRoutes = require("./routes/userRoutes")
+const commentRoutes = require("./routes/commentRoute")
+
 
 
 // server port
@@ -20,7 +22,14 @@ const PORT = 8000;
 // start express 
 const app = express();
 
-
+// Log all incoming POST requests
+app.use((req, res, next) => {
+  if (req.method === 'POST') {
+    console.log('POST request:', req.path);
+    console.log('Body:', req.body);
+  }
+  next();
+});
 
 // setup cors to take 
 app.use(cors({
@@ -68,10 +77,7 @@ app.use((req, res, next) => {
 });
 
 
-// app.use(ANSWER_ROUTE, answerRoutes);
-// app.use(QUESTION_ROUTE, questionRoutes);
-// app.use(TAGS_ROUTE, tagsRoutes);
-// app.use(USER_ROUTE, userRoutes)
+
 
 
 // Start listening 
@@ -80,5 +86,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-
-
+``
