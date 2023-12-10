@@ -182,8 +182,7 @@ function QuestionList({
               </div>
             </div>
             <div className="question-tags">
-              {console.log("Question  ", question)}
-              {question.tags.map((tag) => (
+               {question.tags.map((tag) => (
                 <Tag key={tag._id} tag={tag} onClick={handleTagClick} />
               ))}
             </div>

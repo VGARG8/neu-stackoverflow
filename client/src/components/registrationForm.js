@@ -5,16 +5,20 @@ function RegistrationForm({ onRegister }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isRegistered, setIsRegistered] = useState(false); // New state for registration status
+  const [isRegistered, setIsRegistered] = useState(false); 
+  const [errorMessage, setErrorMessage] = useState(""); // New state for error message
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onRegister({
+    const success = await onRegister({
       username: username.trim(),
       email: email.trim(),
       password: password.trim(),
     });
-    setIsRegistered(true); // Set registration status to true after form submission
+    setIsRegistered(success); // Set registration status based on the result of onRegister
+    if (!success) {
+      setErrorMessage("Registration failed"); // Set error message if registration failed
+    }
   };
 
   return (
@@ -42,6 +46,7 @@ function RegistrationForm({ onRegister }) {
       />
       <button type="submit">Register</button>
       {isRegistered && <p className="success-message">Registration successful!</p>} {/* New success message */}
+      {errorMessage && <p className="error-message">{errorMessage}</p>} {/* New error message */}
     </form>
   );
 }

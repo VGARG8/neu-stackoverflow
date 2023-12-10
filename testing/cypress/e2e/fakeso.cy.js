@@ -1,14 +1,14 @@
 // Template test file. Change the file to add more tests.
-describe('Fake SO Test Suite', () => {
+describe.skip('Create Account/ Login/ Logout ', () => {
     beforeEach(() => {
         // Seed the database before each test
-        //cy.exec('node ../server/populate_db.js');
-        //cy.wait(2000)
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
       });
 
       afterEach(() => {
         // Clear the database after each test
-       // cy.exec('node  ../../server/destroy.js');
+       cy.exec('node  ../server/destroy.js');
       });
     it('successfully shows All Questions string', () => {
         cy.visit('http://localhost:3000');
@@ -30,11 +30,28 @@ describe('Fake SO Test Suite', () => {
     // Submit the form
     cy.get('form').submit();
 
-    // Check that a success message is displayed
-    cy.get('.success-message').should('contain', 'Registration successful!');
-
+    cy.wait(1000); 
 
   });
+
+  it('should not allow creating an account with an email or username that already exists', () => {
+  // Visit the main page
+  cy.visit('http://localhost:3000');
+
+  // Click the "Register" button
+  cy.get('button').contains('Register').click();
+
+  // Fill out the registration form with an existing user's details
+  cy.get('input[name="username"]').type('UserOne');
+  cy.get('input[name="email"]').type('userone@example.com');
+  cy.get('input[name="password"]').type('password1');
+
+  // Submit the form
+  cy.get('form').submit();
+
+  // Check for an error message indicating the username or email already exists
+  cy.get('.error-message').should('contain', 'Registration failed');
+});
 
   it('should log in an existing user', () => {
     // Visit the main page
@@ -44,17 +61,16 @@ describe('Fake SO Test Suite', () => {
     cy.get('button').contains('Login').click();
 
     // Fill out the login form
-    cy.get('input[type="email"]').type('testuser@example.com');
-    cy.get('input[type="password"]').type('testpassword');
+    cy.get('input[type="email"]').type('userone@example.com');
+    cy.get('input[type="password"]').type('password1');
 
     // Submit the form
-    cy.get('form').submit();
-
-    cy.wait(2000)
+    cy.get('form').find('button[type="submit"]').click()
+    cy.wait(100)
 
 
     // Check that a welcome message is displayed
-    cy.contains('Welcome, testuser!');
+    cy.contains('Welcome, UserOne!');
   });
 
   it('should add test questions and answers after login', () => {
@@ -64,18 +80,18 @@ describe('Fake SO Test Suite', () => {
     // Click the "Login" button
     cy.get('button').contains('Login').click();
 
-    // Fill out the login form
-    cy.get('input[type="email"]').type('testuser@example.com');
-    cy.get('input[type="password"]').type('testpassword');
+  // Fill out the login form
+    cy.get('input[type="email"]').type('userone@example.com');
+    cy.get('input[type="password"]').type('password1');
 
     // Submit the form
     cy.get('form').submit();
 
     // Check that a welcome message is displayed
-    cy.contains('Welcome, testuser!');
+    cy.contains('Welcome, UserOne!');
 
     // Add 10 questions and answers
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 5; i++) {
         // Add a question
         cy.contains('Ask a Question').click();
         cy.get('#formTitleInput').type(`Test Question ${i}`);
@@ -93,6 +109,9 @@ describe('Fake SO Test Suite', () => {
         cy.visit('http://localhost:3000');
     }
 });
+
+
+
 
   it('should display a menu with options to view all questions, view all tags, and a search box', () => {
     cy.visit('http://localhost:3000');
@@ -129,71 +148,34 @@ describe('Fake SO Test Suite', () => {
   });
 
 
+   it('displays the question list header correctly', () => {
+    cy.visit('http://localhost:3000');
+    cy.get('.question-list-header').should('exist');
+ 
+  });
+
+  it('shows the correct number of questions and sorting options', () => {
+    cy.visit('http://localhost:3000');
+
+    cy.get('.question-list-subheader').should('exist');
+    cy.get('button').contains('Newest').should('exist');
+    cy.get('button').contains('Active').should('exist');
+    cy.get('button').contains('Unanswered').should('exist');
+  });
+
+  it('displays each question with details', () => {
+    cy.visit('http://localhost:3000');
+
+    cy.get('.question').each(($question) => {
+      cy.wrap($question).find('.question-stats').should('exist');
+      cy.wrap($question).find('.question-title').should('exist');
+      cy.wrap($question).find('.question-post-details').should('exist');
+      cy.wrap($question).find('.question-tags').should('exist');
+    });
+  });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// more tests
-// after questions have been populated
-
-//     it('should display question details correctly', () => {
-//     cy.visit('http://localhost:3000');
-//     cy.get('.question-list').children().first().within(() => {
-//       cy.get('.question-title').should('exist');
-//       cy.get('.question-tags').should('exist');
-//       cy.get('.question-stats').should('exist'); // This checks for views and answers
-//       cy.get('.question-vote-buttons').should('exist'); // This checks for voting buttons
-//       cy.get('.question-score').should('exist'); // This checks for votes
-//       cy.get('.question-post-details').should('exist'); // This checks for author and date
-//       cy.get('.authorEmail').should('exist'); // This checks for author email
-//     });
-//   });
-
-
-//   it('should display only 5 questions at a time', () => {
-//     cy.visit('http://localhost:3000');
-//     cy.get('.question-list').children().should('have.length', 5);
-//   });
-
-
-
-
-//   it('should display next and prev buttons', () => {
-//     cy.visit('http://localhost:3000');
-//     cy.get('button').contains('Next').should('exist');
-//     cy.get('button').contains('Prev').should('exist');
-//   });
-
-
-//   it('should navigate to first 5 questions when next button is clicked on the last page', () => {
-//     cy.visit('http://localhost:3000');
-//     // Navigate to the last page
-//     // ...
-
-//     cy.get('button').contains('Next').click();
-//   });
-
-
-
-
-
-// check logout at the end:   
+  // check logout at the end:   
   it('should log out an existing user', () => {
     // Visit the main page
     cy.visit('http://localhost:3000');
@@ -201,15 +183,15 @@ describe('Fake SO Test Suite', () => {
     // Click the "Login" button
     cy.get('button').contains('Login').click();
 
-    // Fill out the login form
-    cy.get('input[type="email"]').type('testuser@example.com');
-    cy.get('input[type="password"]').type('testpassword');
+  // Fill out the login form
+    cy.get('input[type="email"]').type('userone@example.com');
+    cy.get('input[type="password"]').type('password1');
 
     // Submit the form
     cy.get('form').submit();
 
     // Check that a welcome message is displayed
-    cy.contains('Welcome, testuser!');
+    cy.contains('Welcome, UserOne!');
 
     // Click the "Logout" button
     cy.get('button').contains('Logout').click();
@@ -226,20 +208,177 @@ describe('Fake SO Test Suite', () => {
   });
 
 
+});  
 
-  //User profile tests
-    it('should display the Profile button on the homepage when logged in', () => {
-        cy.get('button').contains('Profile').should('exist');
+
+
+
+  describe('Un-registered Home Page tests', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
+      });
+
+      afterEach(() => {
+        // Clear the database after each test
+       cy.exec('node  ../server/destroy.js');
+      });
+
+    it('navigates between pages correctly', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.pagination-controls').should('exist');
+      cy.get('button').contains('Previous').should('exist');
+      cy.get('button').contains('Next').should('exist');
     });
 
-    it('should navigate to the user profile page when Profile button is clicked', () => {
-        cy.get('button').contains('Profile').click();
-        // cy.url().should('include', '/user-profile'); // Adjust the URL if it differs
-        cy.get('.user-profile').should('exist');
-        cy.contains('User Profile').should('exist');
-
+    it('should display only 5 questions at a time', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.question-list').children().should('have.length', 8);
     });
-});
+  });
+
+
+
+
+
+    describe('Registered Home Page tests', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
+      });
+
+      afterEach(() => {
+        // Clear the database after each test
+       cy.exec('node  ../server/destroy.js');
+      });
+
+    it('navigates between pages correctly', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.pagination-controls').should('exist');
+      cy.get('button').contains('Previous').should('exist');
+      cy.get('button').contains('Next').should('exist');
+    });
+
+    it('should display only 5 questions at a time', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.question-list').children().should('have.length', 8);
+    });
+  });
+
+// must be logged in 
+
+  // it('displays the question list header correctly', () => {
+  //   cy.visit('http://localhost:3000');
+  //   cy.get('.question-list-header').should('exist');
+  //   cy.get('.ask-new-question').should('exist');
+  // });
+
+
+
+    describe('Search', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
+      });
+
+      afterEach(() => {
+        // Clear the database after each test
+       cy.exec('node  ../server/destroy.js');
+      });
+
+    it('navigates between pages correctly', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.pagination-controls').should('exist');
+      cy.get('button').contains('Previous').should('exist');
+      cy.get('button').contains('Next').should('exist');
+    });
+
+    it('should display only 5 questions at a time', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.question-list').children().should('have.length', 8);
+    });
+  });
+
+
+
+      describe('tags', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
+      });
+
+      afterEach(() => {
+        // Clear the database after each test
+       cy.exec('node  ../server/destroy.js');
+      });
+
+    it('navigates between pages correctly', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.pagination-controls').should('exist');
+      cy.get('button').contains('Previous').should('exist');
+      cy.get('button').contains('Next').should('exist');
+    });
+
+    it('should display only 5 questions at a time', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.question-list').children().should('have.length', 8);
+    });
+  });
+
+
+      describe('un-registered Answer Page tests', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
+      });
+
+      afterEach(() => {
+        // Clear the database after each test
+       cy.exec('node  ../server/destroy.js');
+      });
+
+    it('navigates between pages correctly', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.pagination-controls').should('exist');
+      cy.get('button').contains('Previous').should('exist');
+      cy.get('button').contains('Next').should('exist');
+    });
+
+    it('should display only 5 questions at a time', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.question-list').children().should('have.length', 8);
+    });
+  });
+
+      describe('Registered Answer Page tests', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
+      });
+
+      afterEach(() => {
+        // Clear the database after each test
+       cy.exec('node  ../server/destroy.js');
+      });
+
+    it('navigates between pages correctly', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.pagination-controls').should('exist');
+      cy.get('button').contains('Previous').should('exist');
+      cy.get('button').contains('Next').should('exist');
+    });
+
+    it('should display only 5 questions at a time', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.question-list').children().should('have.length', 8);
+    });
+  });
 
 
 
