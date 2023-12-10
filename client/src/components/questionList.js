@@ -166,7 +166,6 @@ function QuestionList({
               </div>
               <div className="question-title">
                 <h3 className="postTitle">{question.title}</h3>
-                <h3 className= "authorEmail">Email: {question.asked_by.author_email}</h3>
               </div>
               <div className="question-post-details lastActivity">
                 <span>
@@ -176,6 +175,7 @@ function QuestionList({
               </div>
             </div>
             <div className="question-tags">
+              {console.log("Question  ", question)}
               {question.tags.map((tag) => (
                 <Tag key={tag._id} tag={tag} onClick={handleTagClick} />
               ))}

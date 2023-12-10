@@ -6,14 +6,16 @@ const router = express.Router();
 
 // import controller 
 const { getTags } = require("../controllers/getTags");
-
+const {editTag} = require("../controllers/editTag");
+const {deleteTag} = require("../controllers/deleteTag");
 // hardcode route
-const TAGS_ROUTE = '/tags'
+
 
 
 // Get tags
 router.get('/', getTags);
-
+router.patch('/',editTag);
+router.delete('/',deleteTag);
 
 
 

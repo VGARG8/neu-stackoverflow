@@ -73,7 +73,10 @@ const useData = () => {
       await axios.post(`${SERVER_URL}/questions`, question, {
         withCredentials: true,
       });
-      fetchQuestions(); // Refresh the questions list
+
+      fetchQuestions();
+      fetchTags();
+
     } catch (err) {
       console.error("Error adding a new question:", err);
     }
@@ -268,7 +271,7 @@ const downvoteComment = async (id) => {
 };
   const deleteQuestionById = async (question) => {
     try {
-      const answerIdsToDelete = question.answers.map((ans) => ans._id);
+      const answerIdsToDelete = (question.answers || []).map((ans) => ans._id);
       const deletePromises = answerIdsToDelete.map((answerId) =>
           axios.delete(`${SERVER_URL}/answers/${answerId}`)
       );
@@ -279,8 +282,16 @@ const downvoteComment = async (id) => {
       // Once all answers are deleted, delete the question
       const response = await axios.delete(`${SERVER_URL}/questions/${question._id}`);
       if (response.status === 200) {
-        fetchQuestions();
-        fetchAnswers(); // Assuming you need to update answers after deletion
+        // Update the state directly
+        setData((prevData) => {
+          // Filter out the deleted question from questions array
+          const updatedQuestions = prevData.questions.filter(q => q._id !== question._id);
+
+          // Filter out the deleted answers from answers array
+          const updatedAnswers = prevData.answers.filter(ans => !answerIdsToDelete.includes(ans._id));
+
+          return { ...prevData, questions: updatedQuestions, answers: updatedAnswers };
+        });
       } else {
         console.log(response.data); // Log response data for debugging
       }
@@ -289,6 +300,8 @@ const downvoteComment = async (id) => {
       // Handle error states if needed
     }
   };
+
+
 
   // Inside the useData hook
   const deleteAnswerById = async (questionId, answerId) => {
@@ -410,6 +423,66 @@ const downvoteComment = async (id) => {
       throw error;
     }
   };
+  const deleteTagForUser = async (tagId, userId) => {
+    try {
+      console.log("Payload  ",tagId,userId);
+      const response = await axios.delete(`${SERVER_URL}/tags`, {
+        data: { tagId, userId }, // Simplified object property shorthand
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        // Filter out the deleted tag from tags array
+        setData((prevData) => {
+          const updatedTags = prevData.tags.filter(tag => tag._id !== tagId);
+          return { ...prevData, tags: updatedTags };
+        });
+
+        // Update questions that had the deleted tag
+        setData((prevData) => {
+          const updatedQuestions = prevData.questions.map((question) => {
+            if (question.tags.includes(tagId)) {
+              const updatedQuestion = { ...question };
+              updatedQuestion.tags = updatedQuestion.tags.filter(tag => tag !== tagId);
+              return updatedQuestion;
+            }
+            return question;
+          });
+          return { ...prevData, questions: updatedQuestions };
+        });
+      } else {
+        console.log(response.data); // Log response data for debugging
+      }
+    } catch (error) {
+      console.error("Error deleting tag for user:", error);
+      // Handle error states if needed
+    }
+  };
+  const updateTagNameById = async (tagId, userId, newTagName) => {
+    try {
+      const response = await axios.patch(`${SERVER_URL}/tags`, {
+        tagId:tagId,
+        newTagName: newTagName,
+        userId: userId
+      }, {
+        withCredentials: true // Add this if needed for authentication
+      });
+
+      if (response.status === 200) {
+        fetchQuestions();
+        fetchTags();
+        console.log('Tag name updated successfully.');
+        // Handle success if needed
+      } else {
+        console.error('Failed to update tag name:', response.data);
+        // Handle failure or error response
+      }
+    } catch (error) {
+      console.error('Error updating tag name:', error);
+      // Handle error states if needed
+    }
+
+  };
+
 
 
   // Fetch data
@@ -439,7 +512,9 @@ const downvoteComment = async (id) => {
     deleteQuestionById,
     deleteAnswerById,
     updateAnswerTextById,
-    updateQuestionTextById
+    updateQuestionTextById,
+    deleteTagForUser,
+    updateTagNameById
   };
 };
 

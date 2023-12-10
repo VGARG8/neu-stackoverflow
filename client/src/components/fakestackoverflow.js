@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, {useState, useEffect, useCallback, useMemo} from "react";
 import AskQuestionForm from "./asknewquestion.js";
 import AnswerForm from "./answerform.js";
 import Header from "./header.js";
@@ -25,7 +25,9 @@ function FakeStackOverflow() {
       deleteQuestionById,
       deleteAnswerById,
       updateAnswerTextById,
-      updateQuestionTextById
+      updateQuestionTextById,
+      deleteTagForUser,
+      updateTagNameById
   } = useData();
 
   const [selectedQuestion, setSelectedQuestion] = useState(null);
@@ -36,9 +38,12 @@ function FakeStackOverflow() {
   const { registerUser, loginUser, authError } = useAuthApi();
   const { login } = useAuth();
 
-  const questions = data ? data.questions : [];
+  // const questions = data ? data.questions : [];
   const tags = data ? data.tags : [];
   const answers = data ? data.answers : [];
+  const questions = useMemo(() => {
+    return data ? data.questions : [];
+  }, [data]);
 
   const handleLoginClick = () => {
     setActiveForm("login");
@@ -204,6 +209,8 @@ function FakeStackOverflow() {
                     deleteAnswerById = {deleteAnswerById}
                     updateAnswerTextById ={updateAnswerTextById}
                     updateQuestionTextById = {updateQuestionTextById}
+                    deleteTagForUser = {deleteTagForUser}
+                    updateTagNameById = {updateTagNameById}
                     onQuestionClick={(question) => {
                       setSelectedQuestion(question);
                       setActivePage("detailedQuestion");
