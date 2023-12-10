@@ -111,13 +111,10 @@ function FakeStackOverflow() {
       )
     : filteredQuestions;
 
-  const handleRegisterPost = async (userData) => {
-    await registerUser(userData);
-    if (!authError) {
-      // once the user registers redirect them to login
-      window.location.href = "/login";
-    }
-  };
+const handleRegisterPost = async (userData) => {
+  const response = await registerUser(userData);
+  return response && !authError; // Return true if registration was successful, false otherwise
+};
 
   const handleLoginPost = async (credentials) => {
     const responseData = await loginUser(credentials);

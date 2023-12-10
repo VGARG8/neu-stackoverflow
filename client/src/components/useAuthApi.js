@@ -14,14 +14,20 @@ const useAuthApi = () => {
       );
       if (response.status === 201) {
         // Handle successful registration
-        window.location.href = "/login"; // Redirect to login page
+        window.location.href = "/"; // Redirect to home
       } else {
         // Handle unsuccessful registration
         setAuthError("Registration failed");
       }
     } catch (error) {
       console.error("Error in registering user:", error);
-      setAuthError(error.message);
+      console.log("error.response:", error.response);
+      if (error.response && error.response.status === 400) {
+        // Handle 400 error here
+        setAuthError("Registration failed due to invalid data");
+      } else {
+        setAuthError(error.message);
+      }
     }
   };
   const loginUser = async (credentials) => {
