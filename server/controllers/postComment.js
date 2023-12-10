@@ -5,23 +5,20 @@ const mongoose = require('mongoose')
 
 exports.postComment = async (req, res) => {
   try {
-    const { text, userId, parentId, parentType } = req.body; // Extract required fields
+    const { text, commented_by, parent } = req.body; 
 
-    console.log('Request body:', req.body); // Log the request body
+    console.log('Request body:', req.body); 
 
-    // Ensure userId is correctly cast to an ObjectId
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
+    // Ensure commented_by is correctly cast to an ObjectId
+    if (!mongoose.Types.ObjectId.isValid(commented_by)) {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
     // Create new comment
     const newComment = new Comment({
       text,
-      commented_by: userId, // comment_by should be a valid ObjectId
-      parent: {
-        id: parentId,
-        type: parentType
-      }
+      commented_by, 
+      parent
     });
 
     console.log('New comment:', newComment); // Log the new comment
@@ -29,18 +26,26 @@ exports.postComment = async (req, res) => {
     await newComment.save();
 
     // Associate the comment with the parent (either a question or an answer)
-    if (parentType === 'Question') {
-      await Question.findByIdAndUpdate(parentId, {
+    if (parent.type === 'Question') {
+      await Question.findByIdAndUpdate(parent.id, {
         $push: { comments: newComment._id },
       });
 
       // Update the Question document
-      const question = await Question.findById(parentId);
+      const question = await Question.findById(parent.id);
+      question.updatedAt = new Date();
       await question.save();
-    } else if (parentType === 'Answer') {
-      await Answer.findByIdAndUpdate(parentId, {
+    } else if (parent.type === 'Answer') {
+      await Answer.findByIdAndUpdate(parent.id, {
         $push: { comments: newComment._id },
       });
+
+      // Find the associated question and update its updatedAt field
+      const question = await Question.findOne({ answers: parent.id });
+      if (question) {
+        question.updatedAt = new Date();
+        await question.save();
+      }
     } else {
       return res.status(400).json({ message: 'Invalid parent type' });
     }

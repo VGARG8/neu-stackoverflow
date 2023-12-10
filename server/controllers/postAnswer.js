@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 
 exports.postAnswer = async (req, res) => {
   try {
-    const { text, ans_by, questionId } = req.body; // Extract required fields
+    const { text, ans_by, questionId } = req.body; 
 
     // Ensure ans_by is correctly cast to an ObjectId
     if (!mongoose.Types.ObjectId.isValid(ans_by)) {
