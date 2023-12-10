@@ -8,6 +8,7 @@ const authenticateJWT = require("../middlewares/auth");
 const { getQuestions } = require("../controllers/getQuestions");
 const { postQuestion } = require("../controllers/postQuestion");
 const { getSingleQuestion } = require("../controllers/getSingleQuestion");
+
 const { postIncrementViews } = require("../controllers/postIncrementViews");
 const {
   postUpvoteQuestion,
@@ -28,6 +29,11 @@ const INCREMENT_QUESTION_VIEW_ROUTE = "/:id/increment-views";
 const QUESTION_BY_ID_ROUTE = "/:id";
 const ACCEPTED_ANSWER_ROUTE = "/:id/accept-answer";
 const COMMENT_ROUTE = "/:id/comments"; 
+
+const DELETE_QUESTION_ROUTE = '/:id';
+
+// Delete a question by ID
+router.delete(DELETE_QUESTION_ROUTE, deleteQuestion);
 
 
 // Get questions

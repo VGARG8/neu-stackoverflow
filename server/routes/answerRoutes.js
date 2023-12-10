@@ -5,6 +5,7 @@ const authenticateJWT = require("../middlewares/auth");
 // import controllers
 const { postAnswer } = require("../controllers/postAnswer");
 const { getAnswers } = require("../controllers/getAnswers");
+
 const {
   postUpvoteAnswer,
   postDownvoteAnswer,
@@ -18,6 +19,11 @@ const UPVOTE_ANSWER_ROUTE = "/:id/upvote";
 const DOWNVOTE_ANSWER_ROUTE = "/:id/downvote";
 const ACCEPT_ANSWER_ROUTE = "/accept-answer";
 const COMMENT_ROUTE = "/:id/comments"; 
+
+
+
+const DELETE_ANSWER_ROUTE ='/:id';
+router.delete(DELETE_ANSWER_ROUTE, deleteAnswer);
 
 
 // Get all answers

@@ -17,6 +17,7 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
   const { currentUser } = useAuth();
 
 
+
   useEffect(() => {
     console.log("This is the current userID: ", currentUser?.user?.id);
   }, [currentUser]); // Logs only when currentUser changes
@@ -78,13 +79,14 @@ function AskQuestionForm({ onSubmit, setActivePage }) {
       return;
     }
 
-
+    console.log("Email "+ currentUser.user.email);
 
     onSubmit({
       title,
       text,
       tagNames: formattedTags,
       asked_by: currentUser.user.id,
+      author_email: currentUser.user.email,
     });
 
     setActivePage("questions");

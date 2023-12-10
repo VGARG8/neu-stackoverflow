@@ -10,6 +10,8 @@ const questionSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  author_email:{type:String, required:true},
+
   views: { type: Number, default: 0 },
   answers: [{ type: mongoose.Schema.Types.ObjectId, ref: "Answer" }],
   score: { type: Number, default: 0 },
