@@ -468,6 +468,8 @@ const downvoteComment = async (id) => {
       });
 
       if (response.status === 200) {
+        fetchQuestions();
+        fetchTags();
         console.log('Tag name updated successfully.');
         // Handle success if needed
       } else {
@@ -478,6 +480,7 @@ const downvoteComment = async (id) => {
       console.error('Error updating tag name:', error);
       // Handle error states if needed
     }
+
   };
 
 
