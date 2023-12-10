@@ -18,6 +18,7 @@ const UserProfile = ({
                          updateQuestionTextById,
                          deleteTagForUser,
                          updateTagNameById,
+                            data
                      }) => {
     const [childActivePage, setChildActivePage] = useState();
     const { currentUser } = useAuth();
@@ -34,6 +35,7 @@ const UserProfile = ({
                         setSelectedTag={setSelectedTag}
                         questions={questions}
                         setActivePage={setActivePage}
+                        data={data}
                         updateQuestionTextById={updateQuestionTextById}
                         deleteQuestionById={deleteQuestionById}
                         onQuestionClick={onQuestionClick}
@@ -103,7 +105,8 @@ UserProfile.propTypes = {
     updateAnswerTextById : PropTypes.func.isRequired,
     updateQuestionTextById:PropTypes.func.isRequired,
     deleteTagForUser: PropTypes.func.isRequired,
-    updateTagNameById:PropTypes.func.isRequired
+    updateTagNameById:PropTypes.func.isRequired,
+    data:PropTypes.object.isRequired
 };
 
 export default UserProfile;

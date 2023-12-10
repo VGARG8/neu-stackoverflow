@@ -172,6 +172,7 @@ function QuestionList({
               </div>
               <div className="question-title">
                 <h3 className="postTitle">{question.title}</h3>
+                <h4 className="postBody">{question.text}</h4>
               </div>
               <div className="question-post-details lastActivity">
                 <span>
