@@ -244,9 +244,9 @@ const useData = () => {
   };
 
 
-const upvoteComment = async (commentId) => {
+const upvoteComment = async (id) => {
   try {
-    await axios.post(`${SERVER_URL}/comments/${commentId}/upvote`, {}, {
+    await axios.post(`${SERVER_URL}/comments/${id}/upvote`, {}, {
       withCredentials: true,
     });
     // Handle the response here
@@ -255,9 +255,9 @@ const upvoteComment = async (commentId) => {
   }
 };
 
-const downvoteComment = async (commentId) => {
+const downvoteComment = async (id) => {
   try {
-    await axios.post(`${SERVER_URL}/comments/${commentId}/downvote`, {}, {
+    await axios.post(`${SERVER_URL}/comments/${id}/downvote`, {}, {
       withCredentials: true,
     });
     // Handle the response here

@@ -1,8 +1,9 @@
 const Comment = require("../models/comments");
+const Question = require("../models/questions"); // Import the Question model
 
 exports.postUpvoteComment = async (req, res) => {
   try {
-    const commentId = req.params.id;
+    const commentId = req.params.id; 
     const comment = await Comment.findById(commentId).populate("commented_by");
 
     if (!comment) return res.status(404).send("Comment not found");
@@ -18,6 +19,12 @@ exports.postUpvoteComment = async (req, res) => {
       await comment.commented_by.save();
     }
 
+    // Update the Question document
+    if (comment.parent.type === 'Question') {
+      const question = await Question.findById(comment.parent.id);
+      await question.save();
+    }
+
     res.status(200).json(comment);
   } catch (error) {
     console.error("Error upvoting comment:", error);
@@ -27,7 +34,7 @@ exports.postUpvoteComment = async (req, res) => {
 
 exports.postDownvoteComment = async (req, res) => {
   try {
-    const commentId = req.params.id;
+    const commentId = req.params.id; 
     const comment = await Comment.findById(commentId).populate("commented_by");
 
     if (!comment) return res.status(404).send("Comment not found");
@@ -41,6 +48,12 @@ exports.postDownvoteComment = async (req, res) => {
       // Decrement user's reputation
       comment.commented_by.reputation -= 1;
       await comment.commented_by.save();
+    }
+
+    // Update the Question document
+    if (comment.parent.type === 'Question') {
+      const question = await Question.findById(comment.parent.id);
+      await question.save();
     }
 
     res.status(200).json(comment);

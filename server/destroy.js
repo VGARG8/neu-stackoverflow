@@ -21,3 +21,4 @@ async function dropDatabase() {
 
 // Call the function
 dropDatabase();
+
