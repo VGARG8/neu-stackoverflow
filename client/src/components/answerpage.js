@@ -87,12 +87,14 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
     //  refresh the answers list or optimistically
   };
 
-  const handleCommentVote = async (event, commentId, voteType) => {
+  const handleCommentVote = async (event, id, voteType) => {
     event.stopPropagation();
+    console.log('ID:', id);
+    console.log('Vote type:', voteType);
     if (voteType === "upvote") {
-      await upvoteComment(commentId);
+      await upvoteComment(id);
     } else {
-      await downvoteComment(commentId);
+      await downvoteComment(id);
     }
     // refresh the comments list or optimistically update the UI
   };
@@ -162,7 +164,7 @@ function AnswerPage({ question, answers, setActivePage, setSelectedTag }) {
             <button
               onClick={(event) =>
                 handleQuestionVote(event, "downvote")
-            }
+              }
             >
               Downvote
             </button>

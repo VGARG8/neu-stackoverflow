@@ -33,6 +33,10 @@ exports.postComment = async (req, res) => {
       await Question.findByIdAndUpdate(parentId, {
         $push: { comments: newComment._id },
       });
+
+      // Update the Question document
+      const question = await Question.findById(parentId);
+      await question.save();
     } else if (parentType === 'Answer') {
       await Answer.findByIdAndUpdate(parentId, {
         $push: { comments: newComment._id },
