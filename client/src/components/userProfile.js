@@ -16,7 +16,8 @@ function UserProfile({
     answers,
     tags,
     deleteQuestionById,
-    deleteAnswerById
+    deleteAnswerById,
+    updateAnswerTextById, updateQuestionTextById
    }
 ) {
     const [childActivePage, setChildActivePage] = useState();
@@ -53,6 +54,7 @@ function UserProfile({
             setSelectedTag={setSelectedTag}
             questions={questions}
             setActivePage={setActivePage}
+            updateQuestionTextById = {updateQuestionTextById}
             deleteQuestionById={deleteQuestionById}
             onQuestionClick={onQuestionClick}
         />}
@@ -61,7 +63,7 @@ function UserProfile({
             answers={answers}
             questions = {questions}
             deleteAnswerById = {deleteAnswerById}
-
+            updateAnswerTextById = {updateAnswerTextById}
             />
 
         }
@@ -84,7 +86,8 @@ UserProfile.propTypes = {
     onQuestionClick: PropTypes.func.isRequired,
     answers: PropTypes.array.isRequired,
     deleteQuestionById:PropTypes.func.isRequired,
-    deleteAnswerById : PropTypes.func.isRequired
-
+    deleteAnswerById : PropTypes.func.isRequired,
+    updateAnswerTextById : PropTypes.func.isRequired,
+    updateQuestionTextById:PropTypes.func.isRequired
 };
 export default UserProfile;

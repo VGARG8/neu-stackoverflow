@@ -332,7 +332,84 @@ const downvoteComment = async (id) => {
       // Handle error states if needed
     }
   };
+  const updateAnswerTextById = async (answerId, newText) => {
+    try {
+      const response = await axios.patch(
+          `${SERVER_URL}/answers/${answerId}`,
+          { newText: newText },
+          {
+            withCredentials: true,
+          }
+      );
 
+      if (response.status === 200) {
+        console.log(`Answer text updated for ID ${answerId}`);
+
+        // Update the data state with the updated answer
+        setData((prevData) => {
+          const updatedData = { ...prevData };
+          // Update the answer text in the existing data
+          if (updatedData.answers) {
+            updatedData.answers = updatedData.answers.map((answer) =>
+                answer._id === answerId ? { ...answer, text: newText } : answer
+            );
+          }
+          // Update the text in corresponding questions' answers array
+          if (updatedData.questions) {
+            const updatedQuestions = updatedData.questions.map((question) => {
+              if (question.answers) {
+                question.answers = question.answers.map((ans) =>
+                    ans._id === answerId ? { ...ans, text: newText } : ans
+                );
+              }
+              return question;
+            });
+            updatedData.questions = updatedQuestions;
+          }
+          return updatedData;
+        });
+      } else {
+        console.log(`Error updating answer text for ID ${answerId}`);
+      }
+    } catch (error) {
+      console.error("Error updating answer text:", error);
+      throw error;
+    }
+  };
+  const updateQuestionTextById = async (questionId, newText) => {
+    try {
+      const response = await axios.patch(
+          `${SERVER_URL}/questions/${questionId}`,
+          { text: newText },
+          {
+            withCredentials: true,
+          }
+      );
+
+      if (response.status === 200) {
+        console.log(`Question text updated for ID ${questionId}`);
+
+        // Update the data state with the updated text
+        setData((prevData) => {
+          const updatedData = { ...prevData };
+
+          // Update the text in the existing data
+          if (updatedData.questions) {
+            updatedData.questions = updatedData.questions.map((question) =>
+                question._id === questionId ? { ...question, text: newText } : question
+            );
+          }
+
+          return updatedData;
+        });
+      } else {
+        console.log(`Error updating question text for ID ${questionId}`);
+      }
+    } catch (error) {
+      console.error("Error updating question text:", error);
+      throw error;
+    }
+  };
 
 
   // Fetch data
@@ -358,9 +435,11 @@ const downvoteComment = async (id) => {
     downvoteAnswer,
     acceptAnswer,
     upvoteComment,
-    downvoteComment
+    downvoteComment,
     deleteQuestionById,
-    deleteAnswerById
+    deleteAnswerById,
+    updateAnswerTextById,
+    updateQuestionTextById
   };
 };
 

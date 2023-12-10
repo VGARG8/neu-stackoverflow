@@ -15,12 +15,6 @@ const userRoutes = require("./routes/userRoutes")
 const commentRoutes = require("./routes/commentRoute")
 
 
-// harcode route 
-const ANSWER_ROUTE = '/answers'
-const QUESTION_ROUTE = '/questions'
-const TAGS_ROUTE = '/tags'
-const USER_ROUTE = '/users'
-const COMMENTS_ROUTE = '/comments'
 
 // server port
 const PORT = 8000;
@@ -58,10 +52,10 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 // Import routes
-const answerRoutes = require("./routes/answerRoutes");
-const questionRoutes = require("./routes/questionRoutes");
-const tagsRoutes = require("./routes/tagsRoutes");
-const userRoutes = require("./routes/userRoutes");
+// const answerRoutes = require("./routes/answerRoutes");
+// const questionRoutes = require("./routes/questionRoutes");
+// const tagsRoutes = require("./routes/tagsRoutes");
+// const userRoutes = require("./routes/userRoutes");
 
 // Define routes
 app.use('/answers', answerRoutes);
@@ -83,11 +77,6 @@ app.use((req, res, next) => {
 });
 
 
-app.use(ANSWER_ROUTE, answerRoutes);
-app.use(QUESTION_ROUTE, questionRoutes);
-app.use(TAGS_ROUTE, tagsRoutes);
-app.use(USER_ROUTE, userRoutes)
-app.use(COMMENTS_ROUTE, commentRoutes);
 
 
 

@@ -31,6 +31,10 @@ const ACCEPTED_ANSWER_ROUTE = "/:id/accept-answer";
 const COMMENT_ROUTE = "/:id/comments"; 
 
 const DELETE_QUESTION_ROUTE = '/:id';
+const {updateQuestionTextById} = require('../controllers/updateQuestionTextById');
+
+// PATCH route to update the question text by ID
+router.patch('/:id', updateQuestionTextById);
 
 // Delete a question by ID
 router.delete(DELETE_QUESTION_ROUTE, deleteQuestion);

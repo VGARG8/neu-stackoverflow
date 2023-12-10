@@ -12,7 +12,13 @@ const {
 } = require("../controllers/answerVote");
 const { deleteAnswer } = require("../controllers/deleteAnswer");
 const { postAcceptAnswer } = require("../controllers/acceptAnswer");
-const { postComment } = require("../controllers/postComment"); 
+
+const { postComment } = require("../controllers/postComment"); // New controller
+const {
+  postUpvoteComment,
+  postDownvoteComment,
+} = require("../controllers/commentVote"); // New controller
+const {updateAnswerTextById} = require("../controllers/updateAnswerTextById");
 
 // routing
 const UPVOTE_ANSWER_ROUTE = "/:id/upvote";
@@ -23,7 +29,9 @@ const COMMENT_ROUTE = "/:id/comments";
 
 
 const DELETE_ANSWER_ROUTE ='/:id';
+const UPDATE_ANSWER =  '/:answerId';
 router.delete(DELETE_ANSWER_ROUTE, deleteAnswer);
+router.patch(UPDATE_ANSWER, updateAnswerTextById);
 
 
 // Get all answers

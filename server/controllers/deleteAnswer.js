@@ -1,7 +1,7 @@
 const Answer = require("../models/answers");
 
 const Question = require("../models/questions");
-
+const Comment= require("../models/comments")
 exports.deleteAnswer = async (req, res) => {
     try {
         const answerId = req.params.id; // Extract answerId from request parameters
@@ -23,7 +23,10 @@ exports.deleteAnswer = async (req, res) => {
             { $pull: { answers: answerId } }, // Remove the answer from the question's answers array
             { new: true } // Return the updated question
         );
-
+        await Comment.deleteMany({
+            "parent.id": answerId,
+            "parent.type": "Answer"
+        });
         // Delete the answer
         await Answer.findByIdAndDelete(answerId);
 
