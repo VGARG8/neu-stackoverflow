@@ -29,12 +29,12 @@ const INCREMENT_QUESTION_VIEW_ROUTE = "/:id/increment-views";
 const QUESTION_BY_ID_ROUTE = "/:id";
 const ACCEPTED_ANSWER_ROUTE = "/:id/accept-answer";
 const COMMENT_ROUTE = "/:id/comments"; 
-const UPVOTE_COMMENT_ROUTE = "/:id/comments/:commentId/upvote";
-const DOWNVOTE_COMMENT_ROUTE = "/:id/comments/:commentId/downvote";
+
 const DELETE_QUESTION_ROUTE = '/:id';
 
 // Delete a question by ID
 router.delete(DELETE_QUESTION_ROUTE, deleteQuestion);
+
 
 // Get questions
 router.get("/", getQuestions);
@@ -57,13 +57,9 @@ router.delete("/:id", authenticateJWT, deleteQuestion);
 router.post(UPVOTE_QUESTION_ROUTE, authenticateJWT, postUpvoteQuestion);
 router.post(DOWNVOTE_QUESTION_ROUTE, authenticateJWT, postDownvoteQuestion);
 
+
+
 // Post a new comment
 router.post(COMMENT_ROUTE, authenticateJWT, postComment); 
-
-// Upvote a comment
-router.post(UPVOTE_COMMENT_ROUTE, authenticateJWT, postUpvoteComment);
-
-// Downvote a comment
-router.post(DOWNVOTE_COMMENT_ROUTE, authenticateJWT, postDownvoteComment);
 
 module.exports = router;
