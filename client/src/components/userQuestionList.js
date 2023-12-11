@@ -6,6 +6,7 @@ import {useAuth} from "./authContext";
 
 const UserQuestionList = ({
                               questions,
+    answers,
                               deleteQuestionById,
                               updateQuestionTextById
                           }) => {
@@ -23,7 +24,7 @@ const UserQuestionList = ({
             (question) => question.author_email === currentUser.user.email
         );
         setFilteredQuestions(filtered);
-    }, [questions, currentUser.user.email]);
+    }, [questions, answers,currentUser.user.email]);
 
     useEffect(() => {
         let updatedQuestions = [...filteredQuestions];
@@ -166,7 +167,7 @@ UserQuestionList.propTypes = {
     questions: PropTypes.array.isRequired,
     deleteQuestionById: PropTypes.func.isRequired,
     updateQuestionTextById: PropTypes.func.isRequired,
-
+    answers: PropTypes.array.isRequired,
 };
 
 export default UserQuestionList;

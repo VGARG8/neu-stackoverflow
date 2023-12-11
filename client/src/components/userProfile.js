@@ -34,6 +34,7 @@ const UserProfile = ({
                     <UserQuestionList
                         setSelectedTag={setSelectedTag}
                         questions={questions}
+                        answers={answers}
                         setActivePage={setActivePage}
                         data={data}
                         updateQuestionTextById={updateQuestionTextById}
@@ -81,6 +82,7 @@ const UserProfile = ({
             <h1>User Profile</h1>
             <p>Username: {currentUser.user.username}</p>
             <p>Reputation: {currentUser.user.reputation}</p>
+            <p>Joined: 0 days</p>
             <div className="user-qat-subheader">
                 <div className="qat-filter-buttons">
                     <button onClick={handleQuestionsClick}>Questions</button>

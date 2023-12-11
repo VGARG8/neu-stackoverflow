@@ -12,6 +12,7 @@ const answerRoutes = require("./routes/answerRoutes");
 const questionRoutes = require("./routes/questionRoutes");
 const tagsRoutes = require("./routes/tagsRoutes");
 const userRoutes = require("./routes/userRoutes")
+const commentRoutes = require('./routes/commentRoute');
 
 
 
