@@ -1,21 +1,29 @@
 module.exports = {
-    env: {
-        browser: true,
-        es2021: true,
-        jest: true,
+    "env": {
+        "browser": true,
+        "es2021": true,
+        mocha:true,
+        'cypress/globals': true,
     },
-    extends: [
-        'eslint:recommended',
-        'plugin:react/recommended'
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        'plugin:cypress/recommended',
     ],
     overrides: [
         {
             files: ['**/*.spec.js'], // Adjust the file pattern as needed
-            globals: {
-                cy: 'readonly', // Define Cypress globals here
-            },
             env: {
                 jest: true,
+                mocha: true,
+                'cypress/globals': true,// Add the mocha environment for test-related globals
+            },
+            globals: {
+                cy: true, // Define Cypress globals here
+                describe: true, // Define 'describe' as a global
+                beforeEach: true, // Define 'beforeEach' as a global
+                afterEach: true, // Define 'afterEach' as a global
+                it: true, // Define 'it' as a global // Define 'beforeEach' as a global
             },
             plugins: ['cypress'],
         },
@@ -33,14 +41,12 @@ module.exports = {
         ecmaVersion: 'latest',
         sourceType: 'module',
     },
-    plugins: ['react'],
+    plugins: ['react','cypress'],
     settings: {
         react: {
             version: 'detect',
         },
     },
-    rules: {
-        "react/react-in-jsx-scope": "off",
-        "react-hooks/rules-of-hooks": "off", // This line has been added
-    },
-};
+    "rules": {
+    }
+}

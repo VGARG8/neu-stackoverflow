@@ -1,6 +1,6 @@
-const Question = require("../models/questions");
+
 const Answer = require("../models/answers");
-const Tag = require("../models/tags");
+
 
 
 exports.getAnswers = async (req, res) => {
