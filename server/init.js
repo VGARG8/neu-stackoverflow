@@ -13,7 +13,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/fake_so');
 
 // Predefined data
 const predefinedUsers = [
-  { username: 'JohnDoe', email: 'johndoe@example.com', password: 'password123'  },
 
   {
     username: 'UserOne',
@@ -112,12 +111,12 @@ async function createTags() {
 }
 
 async function createQuestions(users, tags) {
-  const questions = predefinedQuestions.map(q => new Question({
+  const questions = predefinedQuestions.map((q, index) => new Question({
     title: q.title,
     text: q.text,
     tags: tags.slice(0, 2).map(tag => tag._id),
-    asked_by: users[0]._id,
-    author_email: q.author_email, // Include author email
+    asked_by: users[index % users.length]._id, // Round-robin user assignment
+    author_email: q.author_email,
     views: 10,
     score: 5,
     createdAt: new Date(),

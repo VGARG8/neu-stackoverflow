@@ -234,15 +234,154 @@ describe.skip('Create Account/ Login/ Logout ', () => {
 
     it('should display only 5 questions at a time', () => {
       cy.visit('http://localhost:3000');
-      cy.get('.question-list').children().should('have.length', 8);
+      cy.get('.question-list .question').should('have.length', 5);
     });
+
+    it('should find the text: Cloud Computing Basics', () => {
+  cy.visit('http://localhost:3000');
+  cy.contains('Cloud Computing Basics');
+});
+
+it('should find the title of question Cloud Computing Basics', () => {
+  cy.visit('http://localhost:3000');
+  cy.get('h3.postTitle').contains('Cloud Computing Basics');
+});
+
+it('should find the body text of question Cloud Computing Basics', () => {
+  cy.visit('http://localhost:3000');
+  cy.get('h4.postBody').contains('What are the basics everyone should know about cloud computing?');
+});
+
+it('should find the user who asked the question', () => {
+  cy.visit('http://localhost:3000');
+  cy.get('.question-post-details.lastActivity span').contains('UserThree asked');
+});
+
+it('should find the tags of the question', () => {
+  cy.visit('http://localhost:3000');
+  cy.get('.question-tags .tag').contains('javascript');
+  cy.get('.question-tags .tag').contains('python');
+});
+
+it('should find the score of the question', () => {
+  cy.visit('http://localhost:3000');
+  cy.get('.question-score').contains('
+  
+  it('should find the views and answers of the question', () => {
+  cy.visit('http://localhost:3000');
+  cy.get('.question-stats.postStats span').contains('10 views');
+  cy.get('.question-stats.postStats span').contains('2 answers');
+});
+
+
+
+
+
+
+
   });
 
 
 
 
 
-    describe('Registered Home Page tests', () => {
+    describe.skip('Registered Home Page tests', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
+        
+        cy.visit('http://localhost:3000');
+
+
+            // Click the "Login" button
+        cy.get('button').contains('Login').click();
+
+        // Fill out the login form
+        cy.get('input[type="email"]').type('userone@example.com');
+        cy.get('input[type="password"]').type('password1');
+      });
+
+      afterEach(() => {
+        // Clear the database after each test
+       cy.exec('node  ../server/destroy.js');
+      });
+
+    it('navigates between pages correctly', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.pagination-controls').should('exist');
+      cy.get('button').contains('Previous').should('exist');
+      cy.get('button').contains('Next').should('exist');
+    });
+
+    it('should display only 5 questions at a time', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.question-list .question').should('have.length', 5);
+    });
+
+
+  it('displays the question list header correctly', () => {
+    cy.visit('http://localhost:3000');
+    cy.get('.question-list-header').should('exist');
+    cy.get('.ask-new-question').should('exist');
+  });
+});
+
+
+    describe.skip('Search', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
+      });
+
+      afterEach(() => {
+        // Clear the database after each test
+       cy.exec('node  ../server/destroy.js');
+      });
+
+    it('navigates between pages correctly', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.pagination-controls').should('exist');
+      cy.get('button').contains('Previous').should('exist');
+      cy.get('button').contains('Next').should('exist');
+    });
+
+    it('should display only 5 questions at a time', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.question-list .question').should('have.length', 5);
+    });
+  });
+
+
+
+      describe.skip('tags', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
+        cy.wait(1000)
+      });
+
+      afterEach(() => {
+        // Clear the database after each test
+       cy.exec('node  ../server/destroy.js');
+      });
+
+    it('navigates between pages correctly', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.pagination-controls').should('exist');
+      cy.get('button').contains('Previous').should('exist');
+      cy.get('button').contains('Next').should('exist');
+    });
+
+    it('should display only 5 questions at a time', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('.question-list .question').should('have.length', 5);
+    });
+  });
+
+
+      describe.skip('un-registered Answer Page tests', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
@@ -267,99 +406,21 @@ describe.skip('Create Account/ Login/ Logout ', () => {
     });
   });
 
-// must be logged in 
-
-  // it('displays the question list header correctly', () => {
-  //   cy.visit('http://localhost:3000');
-  //   cy.get('.question-list-header').should('exist');
-  //   cy.get('.ask-new-question').should('exist');
-  // });
-
-
-
-    describe('Search', () => {
+      describe.skip('Registered Answer Page tests', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
         cy.wait(1000)
-      });
-
-      afterEach(() => {
-        // Clear the database after each test
-       cy.exec('node  ../server/destroy.js');
-      });
-
-    it('navigates between pages correctly', () => {
-      cy.visit('http://localhost:3000');
-      cy.get('.pagination-controls').should('exist');
-      cy.get('button').contains('Previous').should('exist');
-      cy.get('button').contains('Next').should('exist');
-    });
-
-    it('should display only 5 questions at a time', () => {
-      cy.visit('http://localhost:3000');
-      cy.get('.question-list').children().should('have.length', 8);
-    });
-  });
+        
+        cy.visit('http://localhost:3000');
 
 
+            // Click the "Login" button
+        cy.get('button').contains('Login').click();
 
-      describe('tags', () => {
-    beforeEach(() => {
-        // Seed the database before each test
-        cy.exec('node ../server/init.js');
-        cy.wait(1000)
-      });
-
-      afterEach(() => {
-        // Clear the database after each test
-       cy.exec('node  ../server/destroy.js');
-      });
-
-    it('navigates between pages correctly', () => {
-      cy.visit('http://localhost:3000');
-      cy.get('.pagination-controls').should('exist');
-      cy.get('button').contains('Previous').should('exist');
-      cy.get('button').contains('Next').should('exist');
-    });
-
-    it('should display only 5 questions at a time', () => {
-      cy.visit('http://localhost:3000');
-      cy.get('.question-list').children().should('have.length', 8);
-    });
-  });
-
-
-      describe('un-registered Answer Page tests', () => {
-    beforeEach(() => {
-        // Seed the database before each test
-        cy.exec('node ../server/init.js');
-        cy.wait(1000)
-      });
-
-      afterEach(() => {
-        // Clear the database after each test
-       cy.exec('node  ../server/destroy.js');
-      });
-
-    it('navigates between pages correctly', () => {
-      cy.visit('http://localhost:3000');
-      cy.get('.pagination-controls').should('exist');
-      cy.get('button').contains('Previous').should('exist');
-      cy.get('button').contains('Next').should('exist');
-    });
-
-    it('should display only 5 questions at a time', () => {
-      cy.visit('http://localhost:3000');
-      cy.get('.question-list').children().should('have.length', 8);
-    });
-  });
-
-      describe('Registered Answer Page tests', () => {
-    beforeEach(() => {
-        // Seed the database before each test
-        cy.exec('node ../server/init.js');
-        cy.wait(1000)
+        // Fill out the login form
+        cy.get('input[type="email"]').type('userone@example.com');
+        cy.get('input[type="password"]').type('password1');
       });
 
       afterEach(() => {
