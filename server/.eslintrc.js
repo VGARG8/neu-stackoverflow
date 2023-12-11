@@ -22,5 +22,7 @@ module.exports = {
         "ecmaVersion": "latest"
     },
     "rules": {
+                "react/react-in-jsx-scope": "off",
+        "react-hooks/rules-of-hooks": "off", 
     }
 }
