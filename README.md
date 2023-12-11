@@ -74,6 +74,6 @@ implenetd design pattern on client side
 
 - Design Pattern Name: Factory pattern used 
 
-- Problem Solved: It made our components much cleaner and human-readable
+- Problem Solved: It made our components much cleaner and human-readable it also helped the routing for our client side.
 
 - Location in code where the pattern is used: It is in the user profile
