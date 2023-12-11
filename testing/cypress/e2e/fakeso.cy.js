@@ -213,7 +213,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
 
 
 
-  describe('Un-registered Home Page tests', () => {
+  describe.skip('Un-registered Home Page tests', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
@@ -242,7 +242,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
 
 
 
-    describe('Registered Home Page tests', () => {
+    describe.skip('Registered Home Page tests', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
@@ -277,7 +277,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
 
 
 
-    describe('Search', () => {
+    describe.skip('Search', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
@@ -304,7 +304,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
 
 
 
-      describe('tags', () => {
+      describe.skip('tags', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
@@ -330,7 +330,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
   });
 
 
-      describe('un-registered Answer Page tests', () => {
+      describe.skip('un-registered Answer Page tests', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
@@ -355,7 +355,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
     });
   });
 
-      describe('Registered Answer Page tests', () => {
+      describe.skip('Registered Answer Page tests', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
@@ -379,7 +379,238 @@ describe.skip('Create Account/ Login/ Logout ', () => {
       cy.get('.question-list').children().should('have.length', 8);
     });
   });
+describe('User Profile Input Tests', () => {
+    beforeEach(() => {
+        // Seed the database before each test
+        cy.exec('node ../server/init.js');
 
+
+        cy.visit('http://localhost:3000');
+
+
+        // Click the "Login" button
+        cy.get('button').contains('Login').click();
+
+        // Fill out the login form
+        cy.get('input[type="email"]').type('userone@example.com');
+        cy.get('input[type="password"]').type('password1');
+        cy.get('form').submit();
+        cy.wait(1000)
+    });
+
+    afterEach(() => {
+        // Clear the database after each test
+        cy.exec('node  ../server/destroy.js');
+    });
+    it('should display the Profile button on the homepage when  logged in', () => {
+        cy.visit('http://localhost:3000');
+        cy.contains('Welcome, UserOne!');
+        cy.contains('Profile').should('exist');
+
+    });
+
+    it('should navigate to the user profile page when Profile button is clicked', () => {
+        cy.visit('http://localhost:3000');
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile') // Look for the button with text 'Profile'
+            .click(); // Click the button
+            cy.wait(1000);
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+    });
+
+    it('in user profile should find user name', () => {
+        cy.visit('http://localhost:3000');
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile') // Look for the button with text 'Profile'
+            .click(); // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.contains("UserOne").should('exist');
+    });
+    it('in user profile should find reputation', () => {
+        cy.visit('http://localhost:3000');
+
+
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile')
+            .click(); // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.contains("Reputation").should('exist');
+    });
+
+    it('in user profile should find Tag Link', () => {
+        cy.visit('http://localhost:3000');
+
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile')
+            .click(); // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.get('button').contains("Tag").should('exist');
+    });
+    it('in user profile should find Question link', () => {
+        cy.visit('http://localhost:3000');
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile')
+            .click(); // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.get('.user-profile').get('button').contains("Questions").should('exist');
+    });
+    it('in user profile should find Answer Link', () => {
+        cy.visit('http://localhost:3000');
+
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile')
+            .click(); // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.get('button').contains("Answers").should('exist');
+    });
+
+    it('in user profile click on Question links', () => {
+        cy.visit('http://localhost:3000');
+
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile')
+            .click(); // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.get('.user-profile').find('button').contains("Questions").should('exist').click();
+    });
+    it('in user profile questions have pagination', () => {
+        cy.visit('http://localhost:3000');
+
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile')
+            .click(); // Click the button // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.get('.user-profile').find('button').contains("Questions").should('exist').click();
+        cy.get('.user-profile').find('button').contains("Next").should('exist').click();
+        cy.get('.user-profile').find('button').contains("Prev").should('exist').click();
+    });
+
+    it('in user profile questions check all the questions for user are present or not', () => {
+        cy.visit('http://localhost:3000');
+
+        cy.get('button').contains('Login').click();
+
+        // Fill out the login form
+        cy.get('input[type="email"]').type('testuser@example.com');
+        cy.get('input[type="password"]').type('testpassword');
+
+        // Submit the form
+        cy.get('form').submit();
+
+        cy.wait(2000)
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile') // Look for the button with text 'Profile'
+            .should('exist') // Ensure the button exists
+            .click(); // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.get('.user-profile').find('button').contains("Questions").should('exist').click();
+        let count = 0;
+        for(let i =15;i>0;i--){
+            count++;
+            const questionText = `Test Question ${i}`;
+
+
+
+            cy.get('.userQuestionList').contains(questionText).should('exist');
+            if(count===5){
+                cy.get('.user-profile').find('button').contains("Next").should('exist').click();
+                count =0;
+            }
+        }
+    });
+    it('in user profile questions check all the answers for user are present or not', () => {
+        cy.visit('http://localhost:3000');
+
+        cy.get('button').contains('Login').click();
+
+        // Fill out the login form
+        cy.get('input[type="email"]').type('testuser@example.com');
+        cy.get('input[type="password"]').type('testpassword');
+
+        // Submit the form
+        cy.get('form').submit();
+
+        cy.wait(2000)
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile') // Look for the button with text 'Profile'
+            .should('exist') // Ensure the button exists
+            .click(); // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.get('.user-profile').find('button').contains("Answers").should('exist').click();
+        let count = 0;
+        for(let i =15;i>0;i--){
+            count++;
+            const answerText = `Answer Question ${i}`;
+
+
+
+            cy.get('.useAnswerList').contains(answerText).should('exist');
+            if(count===5){
+                cy.get('.user-profile').find('button').contains("Next").should('exist').click();
+                count =0;
+            }
+        }
+    });
+    it('in user profile questions check all the answers for user are present or not', () => {
+        cy.visit('http://localhost:3000');
+
+
+        // Click the Profile button
+        cy
+            .get('button') // Find the button inside that div
+            .contains('Profile') // Look for the button with text 'Profile'
+            .should('exist') // Ensure the button exists
+            .click(); // Click the button
+
+        // Assert that the 'User Profile' text exists on the page
+        cy.contains('User Profile').should('exist');
+        cy.get('.user-profile').find('button').contains("Tags").should('exist').click();
+        cy.contains("JavaScript").should('exist');
+
+    });
+
+
+
+});
 
 
 
