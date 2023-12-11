@@ -42,6 +42,7 @@ exports.loginUser = async (req, res) => {
 
         res.cookie("token", token, {
           httpOnly: true,
+          // eslint-disable-next-line no-undef
           secure: process.env.NODE_ENV === "production",
           maxAge: 3600 * 1000,
         });

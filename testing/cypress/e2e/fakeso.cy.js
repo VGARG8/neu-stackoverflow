@@ -1,9 +1,11 @@
 // Template test file. Change the file to add more tests.
+
+
 describe.skip('Create Account/ Login/ Logout ', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
-        cy.wait(1000)
+
       });
 
       afterEach(() => {
@@ -30,7 +32,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
     // Submit the form
     cy.get('form').submit();
 
-    cy.wait(1000); 
+
 
   });
 
@@ -66,7 +68,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
 
     // Submit the form
     cy.get('form').find('button[type="submit"]').click()
-    cy.wait(100)
+
 
 
     // Check that a welcome message is displayed
@@ -196,8 +198,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
     // Click the "Logout" button
     cy.get('button').contains('Logout').click();
 
-    // Wait for a short period to allow the state update to complete
-    cy.wait(1000); // Adjust the delay as needed
+
 
     // Check that the "Logout" button is no longer present
     cy.get('button').contains('Logout').should('not.exist');
@@ -215,7 +216,7 @@ describe.skip('Create Account/ Login/ Logout ', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
-        cy.wait(1000)
+
       });
 
       afterEach(() => {
@@ -283,7 +284,7 @@ it('should find the views and answers of the question', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
-        cy.wait(1000)
+
         
         cy.visit('http://localhost:3000');
 
@@ -378,7 +379,7 @@ it('should find the Profile button', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
-        cy.wait(1000)
+
       });
 
       afterEach(() => {
@@ -436,7 +437,7 @@ describe.skip('tags', () => {
   beforeEach(() => {
     // Seed the database before each test
     cy.exec('node ../server/init.js');
-    cy.wait(1000);
+
     cy.visit('http://localhost:3000');
   });
 
@@ -476,7 +477,7 @@ describe('un-registered Answer Page tests', () => {
   beforeEach(() => {
     // Seed the database before each test
     cy.exec('node ../server/init.js');
-    cy.wait(1000);
+
     cy.visit('http://localhost:3000');
     cy.get('h3.postTitle').contains('Understanding Async Programming in JavaScript').click();
   });
@@ -525,7 +526,7 @@ describe('un-registered Answer Page tests', () => {
     beforeEach(() => {
         // Seed the database before each test
         cy.exec('node ../server/init.js');
-        cy.wait(1000)
+
         
         cy.visit('http://localhost:3000');
 

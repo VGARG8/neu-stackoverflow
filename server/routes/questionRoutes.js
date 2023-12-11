@@ -17,10 +17,10 @@ const {
 const { deleteQuestion } = require("../controllers/deleteQuestion");
 const { postAcceptAnswer } = require("../controllers/acceptAnswer");
 const { postComment } = require("../controllers/postComment"); 
-const {
-  postUpvoteComment,
-  postDownvoteComment,
-} = require("../controllers/commentVote");
+// const {
+//   postUpvoteComment,
+//   postDownvoteComment,
+// } = require("../controllers/commentVote");
 
 // routes
 const UPVOTE_QUESTION_ROUTE = "/:id/upvote";

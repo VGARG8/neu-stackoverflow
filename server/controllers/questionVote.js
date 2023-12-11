@@ -1,5 +1,5 @@
 const Question = require("../models/questions");
-const User = require('../models/users'); 
+
 
 exports.postUpvoteQuestion = async (req, res) => {
   try {
