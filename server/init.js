@@ -99,7 +99,9 @@ async function createUsers() {
       username: userData.username,
       email: userData.email,
       password: hashedPassword,
-      dateCreated: new Date(), // Use a fixed date if needed
+      reputation: userData.reputation, 
+
+      dateCreated: new Date(), 
     }));
   }
   return User.insertMany(users);
@@ -111,33 +113,47 @@ async function createTags() {
 }
 
 async function createQuestions(users, tags) {
-  const questions = predefinedQuestions.map((q, index) => new Question({
-    title: q.title,
-    text: q.text,
-    tags: tags.slice(0, 2).map(tag => tag._id),
-    asked_by: users[index % users.length]._id, // Round-robin user assignment
-    author_email: q.author_email,
-    views: 10,
-    score: 5,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }));
+  const questions = predefinedQuestions.map((q, index) => {
+    // Calculate start and end indices for slicing tags array
+    const start = index % tags.length;
+    const numTags = 1 + (index % 3); 
+    const end = (start + numTags) % tags.length;
+
+    // Get tags in a round-robin fashion
+    let questionTags;
+    if (start < end) {
+      questionTags = tags.slice(start, end);
+    } else {
+      // If end index is less than start index, it means we've reached the end of the tags array and need to loop back to the start
+      questionTags = [...tags.slice(start), ...tags.slice(0, end)];
+    }
+
+    return new Question({
+      title: q.title,
+      text: q.text,
+      tags: questionTags.map(tag => tag._id),
+      asked_by: users[index % users.length]._id, 
+      author_email: q.author_email,
+      views: 10,
+      score: 5,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  });
 
   return Question.insertMany(questions);
 }
-
-
 
 async function createAnswers(users, questions) {
   const answers = [];
   for (let i = 0; i < predefinedAnswers.length; i++) {
     const a = predefinedAnswers[i];
-    const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+    const question = questions[i % questions.length];
 
     const answer = new Answer({
       text: a.text,
-      ans_by: users[Math.floor(Math.random() * users.length)]._id,
-      question: randomQuestion._id,
+      ans_by: users[i % users.length]._id, 
+      question: question._id,
       score: 3,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -146,15 +162,15 @@ async function createAnswers(users, questions) {
     answers.push(answer);
 
     // Associate the answer with the question
-    randomQuestion.answers.push(answer._id);
+    question.answers.push(answer._id);
 
-    // Randomly decide whether to accept this answer (optional)
-    if (Math.random() < 0.3 && !randomQuestion.accepted_answer) {
-      randomQuestion.accepted_answer = answer._id;
+    // Accept the first answer for each question
+    if (i % users.length === 0) {
+      question.accepted_answer = answer._id;
     }
 
     // Save the question
-    await randomQuestion.save();
+    await question.save();
   }
 
   return Answer.insertMany(answers);
@@ -164,11 +180,12 @@ async function createComments(users, questions, answers) {
   const comments = [];
 
   // Add multiple comments to each question
-  for (const question of questions) {
-    for (let i = 0; i < 10; i++) {  
+  for (let i = 0; i < questions.length; i++) {
+    const question = questions[i];
+    for (let j = 0; j < 10; j++) {  
       const comment = new Comment({
-        text: `This is comment ${i + 1} on a question.`,
-        commented_by: users[Math.floor(Math.random() * users.length)]._id,
+        text: `This is comment ${j + 1} on a question.`,
+        commented_by: users[(i + j) % users.length]._id, // Round-robin selection of user
         parent: {
           id: question._id,
           type: 'Question'
@@ -184,11 +201,12 @@ async function createComments(users, questions, answers) {
   }
 
   // Add multiple comments to each answer
-  for (const answer of answers) {
-    for (let i = 0; i < 3; i++) {  
+  for (let i = 0; i < answers.length; i++) {
+    const answer = answers[i];
+    for (let j = 0; j < 3; j++) {  
       const comment = new Comment({
-        text: `This is comment ${i + 1} on an answer.`,
-        commented_by: users[Math.floor(Math.random() * users.length)]._id,
+        text: `This is comment ${j + 1} on an answer.`,
+        commented_by: users[(i + j) % users.length]._id, // Round-robin selection of user
         parent: {
           id: answer._id,
           type: 'Answer'
