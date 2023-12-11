@@ -12,7 +12,9 @@ const answerRoutes = require("./routes/answerRoutes");
 const questionRoutes = require("./routes/questionRoutes");
 const tagsRoutes = require("./routes/tagsRoutes");
 const userRoutes = require("./routes/userRoutes")
+
 const commentRoutes = require('./routes/commentRoute');
+
 
 
 
@@ -52,11 +54,6 @@ mongoose.connect("mongodb://127.0.0.1:27017/fake_so", {
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-// Import routes
-// const answerRoutes = require("./routes/answerRoutes");
-// const questionRoutes = require("./routes/questionRoutes");
-// const tagsRoutes = require("./routes/tagsRoutes");
-// const userRoutes = require("./routes/userRoutes");
 
 // Define routes
 app.use('/answers', answerRoutes);
