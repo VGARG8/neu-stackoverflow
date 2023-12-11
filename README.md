@@ -12,7 +12,7 @@ TO start running this project npm install must first be ran to ensure all of the
 - the client directory
 - the server directory 
 - and the parent directory
-- 
+
  Next for middleware authentication to work a folder must be created with the name of: 
 -'config' 
 
