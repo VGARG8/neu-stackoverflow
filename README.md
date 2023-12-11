@@ -72,7 +72,7 @@ implenetd design pattern on client side
 
 ## Design Patterns Used
 
-- Design Pattern Name: Factory pattern used 
+- Design Pattern Name: Factory pattern/ we also have an implicit Facade pattern in our useData custom hook.
 
 - Problem Solved: It made our components much cleaner and human-readable it also helped the routing for our client side.
 
